@@ -1,4 +1,10 @@
+from enum import Enum
+
 from pydantic import BaseSettings
+
+class Environment(str, Enum):
+    PRODUCTION = "prod"
+    DEVELOPMENT = "dev"
 
 
 class Settings(BaseSettings):
@@ -6,6 +12,7 @@ class Settings(BaseSettings):
     SQL_ECHO: bool = False
     GUILD_ID: int = -1
     ALLOWED_ROLES: list[str] = []
+    ENVIRONMENT: str = Environment.DEVELOPMENT
 
     class Config:
         case_sensitive = False

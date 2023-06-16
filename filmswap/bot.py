@@ -22,7 +22,7 @@ from .db import (
     leave_swap,
     has_giftee,
 )
-from .settings import settings
+from .settings import settings, Environment
 from .manage import Manage, JoinSwapButton
 
 
@@ -543,8 +543,10 @@ def create_bot() -> discord.Client:
         manager._bot = bot  # type: ignore
 
         bot.tree.add_command(manager)
-        bot.tree.copy_global_to(guild=discord.Object(id=settings.GUILD_ID))
-        await bot.tree.sync(guild=discord.Object(id=settings.GUILD_ID))
+        if settings.ENVIRONMENT == Environment.DEVELOPMENT:
+            logger.info("Syncing dev commands")
+            bot.tree.copy_global_to(guild=discord.Object(id=settings.GUILD_ID))
+            await bot.tree.sync(guild=discord.Object(id=settings.GUILD_ID))
 
         await bot.tree.sync()
 
