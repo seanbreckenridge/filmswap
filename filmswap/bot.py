@@ -1,5 +1,5 @@
 from __future__ import annotations
-from logzero import logger
+from logzero import logger  # type: ignore[import]
 
 import discord
 import discord.abc
@@ -90,7 +90,7 @@ def create_bot() -> discord.Client:
     intents = discord.Intents.default() | discord.Intents(reactions=True)
     bot = commands.Bot(command_prefix=commands.when_mentioned, intents=intents)
 
-    async def error_if_not_in_dm(ctx: discord.Interaction | commands.Context) -> bool:
+    async def error_if_not_in_dm(ctx: discord.Interaction | commands.Context) -> bool:  # type: ignore[type-arg]
         if isinstance(ctx, commands.Context):
             if ctx.guild is not None:
                 await ctx.author.send(
@@ -113,7 +113,7 @@ def create_bot() -> discord.Client:
                 return True
         return False
 
-    async def not_active_user(ctx: discord.Interaction | commands.Context) -> bool:
+    async def not_active_user(ctx: discord.Interaction | commands.Context) -> bool:  # type: ignore[type-arg]
         """
         returns True if user is not active, False if user is active
         """
@@ -128,8 +128,8 @@ def create_bot() -> discord.Client:
                 return True
         return False
 
-    @bot.tree.command(name="review-letter", description="Review your letter")
-    async def review_letter(interaction: discord.Interaction):
+    @bot.tree.command(name="review-letter", description="Review your letter")  # type: ignore[arg-type]
+    async def review_letter(interaction: discord.Interaction) -> None:
         logger.info(f"User {interaction.user.id} reviewing their own letter")
 
         if await error_if_not_in_dm(interaction):
@@ -141,11 +141,11 @@ def create_bot() -> discord.Client:
         embed = review_my_letter_embed(interaction.user.id)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @bot.tree.command(
+    @bot.tree.command(  # type: ignore[arg-type]
         name="letter-help",
         description="Write the letter your santa will see. Use >letter [text] instead",
     )
-    async def letter_help(interaction: discord.Interaction):
+    async def letter_help(interaction: discord.Interaction) -> None:
         logger.info(f"User {interaction.user.id} used letter")
 
         if await error_if_not_in_dm(interaction):
@@ -159,11 +159,11 @@ def create_bot() -> discord.Client:
             ephemeral=True,
         )
 
-    @bot.tree.command(
+    @bot.tree.command(  # type: ignore[arg-type]
         name="write-santa-help",
         description="Write an anonymous letter to your santa. Use >write-santa [text] instead",
     )
-    async def write_santa_help(interaction: discord.Interaction):
+    async def write_santa_help(interaction: discord.Interaction) -> None:
         logger.info(f"User {interaction.user.id} used write-santa")
 
         if await error_if_not_in_dm(interaction):
@@ -177,11 +177,11 @@ def create_bot() -> discord.Client:
             ephemeral=True,
         )
 
-    @bot.tree.command(
+    @bot.tree.command(  # type: ignore[arg-type]
         name="write-giftee-help",
         description="Write an anonymous letter to your giftee. Use >write-giftee [text] instead",
     )
-    async def write_giftee_help(interaction: discord.Interaction):
+    async def write_giftee_help(interaction: discord.Interaction) -> None:
         logger.info(f"User {interaction.user.id} used write-giftee")
 
         if await error_if_not_in_dm(interaction):
@@ -195,8 +195,8 @@ def create_bot() -> discord.Client:
             ephemeral=True,
         )
 
-    @bot.tree.command(name="review-gift", description="Review your gift")
-    async def review_gift(interaction: discord.Interaction):
+    @bot.tree.command(name="review-gift", description="Review your gift")  # type: ignore[arg-type]
+    async def review_gift(interaction: discord.Interaction) -> None:
         logger.info(
             f"User {interaction.user.id} viewing their own gift (the one they submitted)"
         )
@@ -207,11 +207,11 @@ def create_bot() -> discord.Client:
         embed = review_my_gift_embed(interaction.user.id)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @bot.tree.command(
+    @bot.tree.command(  # type: ignore[arg-type]
         name="submit-help",
         description="Submit gift for your giftee (your recommendation). Use >submit instead",
     )
-    async def submit_help(interaction: discord.Interaction):
+    async def submit_help(interaction: discord.Interaction) -> None:
         logger.info(f"User {interaction.user.id} submitting gift")
 
         if await error_if_not_in_dm(interaction):
@@ -225,8 +225,8 @@ def create_bot() -> discord.Client:
             "Use `>submit [text]` to submit your gift, where [text] is your gift/film recommendation"
         )
 
-    @bot.tree.command(name="receive", description="Read the gift from your Santa")
-    async def receive(interaction: discord.Interaction):
+    @bot.tree.command(name="receive", description="Read the gift from your Santa")  # type: ignore[arg-type]
+    async def receive(interaction: discord.Interaction) -> None:
         logger.info(f"User {interaction.user.id} used receive")
 
         if await error_if_not_in_dm(interaction):
@@ -238,8 +238,8 @@ def create_bot() -> discord.Client:
         gift = receive_gift_embed(interaction.user.id)
         await interaction.response.send_message(embed=gift, ephemeral=True)
 
-    @bot.tree.command(name="read", description="Read the letter from your giftee")
-    async def read(interaction: discord.Interaction):
+    @bot.tree.command(name="read", description="Read the letter from your giftee")  # type: ignore[arg-type]
+    async def read(interaction: discord.Interaction) -> None:
         if await error_if_not_in_dm(interaction):
             return
 
@@ -251,8 +251,8 @@ def create_bot() -> discord.Client:
         letter = read_giftee_letter(interaction.user.id)
         await interaction.response.send_message(embed=letter, ephemeral=True)
 
-    @bot.tree.command(name="leave", description="Leave the swap")
-    async def leave(interaction: discord.Interaction):
+    @bot.tree.command(name="leave", description="Leave the swap")  # type: ignore[arg-type]
+    async def leave(interaction: discord.Interaction) -> None:
         logger.info(f"User {interaction.user.id} used leave")
 
         if await error_if_not_in_dm(interaction):
@@ -280,8 +280,8 @@ def create_bot() -> discord.Client:
             ephemeral=True,
         )
 
-    @bot.tree.command(name="done-watching", description="Mark your gift as watched")
-    async def done_watching(interaction: discord.Interaction):
+    @bot.tree.command(name="done-watching", description="Mark your gift as watched")  # type: ignore[arg-type]
+    async def done_watching(interaction: discord.Interaction) -> None:
         logger.info(f"User {interaction.user.id} used done-watching")
 
         if await error_if_not_in_dm(interaction):
@@ -309,7 +309,7 @@ def create_bot() -> discord.Client:
         )
 
     @bot.event
-    async def on_command_error(ctx: commands.Context, error: Exception) -> None:
+    async def on_command_error(ctx: commands.Context, error: Exception) -> None:  # type: ignore[type-arg]
         logger.exception(f"Error: {error}", exc_info=True)
 
     @bot.event
@@ -436,10 +436,10 @@ def create_bot() -> discord.Client:
                 return
 
             assert santa is not None
-            assert isinstance(santa.user_id, int)
-            santa_user = await bot.fetch_user(santa.user_id)
 
-            if santa_user is None:
+            try:
+                santa_user = await bot.fetch_user(santa.user_id)
+            except Exception:
                 logger.info(
                     f"User {message.author.id} tried to send message to santa but their santa's ID {santa.user_id} is invalid"
                 )
@@ -489,10 +489,9 @@ def create_bot() -> discord.Client:
                 return
 
             assert giftee is not None
-            assert isinstance(giftee.user_id, int)
-            giftee_user = await bot.fetch_user(giftee.user_id)
-
-            if giftee_user is None:
+            try:
+                giftee_user = await bot.fetch_user(giftee.user_id)
+            except Exception:
                 logger.info(
                     f"User {message.author.id} tried to send message to giftee but their giftee's ID {giftee.user_id} is invalid"
                 )
@@ -511,7 +510,7 @@ def create_bot() -> discord.Client:
                 await giftee_user.send(embed=embed)
                 await message.author.send("Your message has been sent")
 
-    @bot.tree.command()
+    @bot.tree.command()  # type: ignore[arg-type]
     async def help(interaction: discord.Interaction) -> None:
         logger.info(f"User {interaction.user.id} requested help")
         await interaction.response.send_message(embed=help_embed(), ephemeral=True)

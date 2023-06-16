@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import MetaData
-from logzero import logger
+from logzero import logger  # type: ignore[import]
 
 
 metadata = MetaData()
@@ -46,20 +46,20 @@ class Swap(Base):
 
     @staticmethod
     def list_swaps() -> list[Swap]:
-        with Session(engine) as session:
-            return session.query(Swap).all()
+        with Session(engine) as session:  # type: ignore[attr-defined]
+            return session.query(Swap).all()  # type: ignore[no-any-return]
 
     @staticmethod
     def get_swap() -> Swap:
-        with Session(engine) as session:
+        with Session(engine) as session:  # type: ignore[attr-defined]
             try:
-                return session.query(Swap).filter_by().limit(1).one()
+                return session.query(Swap).filter_by().limit(1).one()  # type: ignore[no-any-return]
             except NoResultFound as e:
                 raise RuntimeError("No swap configured") from e
 
     @staticmethod
     def create_swap() -> Swap:
-        with Session(engine) as session:
+        with Session(engine) as session:  # type: ignore[attr-defined]
             try:
                 swap = session.query(Swap).filter_by().limit(1).one()
                 raise RuntimeError("Swap is already configured")
@@ -68,12 +68,12 @@ class Swap(Base):
             swap = Swap()
             session.add(swap)
             session.commit()
-        return swap
+        return swap  # type: ignore[no-any-return]
 
     @staticmethod
     def save_join_button_message_id(message_id: int) -> None:
         logger.info(f"Saving join button message id {message_id}")
-        with Session(engine) as session:
+        with Session(engine) as session:  # type: ignore[attr-defined]
             swap = Swap.get_swap()
             swap.join_button_message_id = message_id
             session.add(swap)
@@ -95,7 +95,7 @@ class Swap(Base):
 
     @staticmethod
     def match_users() -> None:
-        with Session(engine) as session:
+        with Session(engine) as session:  # type: ignore[attr-defined]
             # find users where they have letters, and have no matched user
             users = session.query(SwapUser).filter_by(santa_id=None).all()
             logger.info(f"Found {len(users)} users with no santa")
@@ -129,7 +129,7 @@ class Swap(Base):
 
     @staticmethod
     def unmatch_users() -> None:
-        with Session(engine) as session:
+        with Session(engine) as session:  # type: ignore[attr-defined]
             # set all users santa_id and giftee_id to None
             users = session.query(SwapUser).all()
             for user in users:
@@ -142,7 +142,7 @@ class Swap(Base):
     @staticmethod
     def set_swap_period(period: SwapPeriod) -> str | None:
         msg: str | None = None
-        with Session(engine) as session:
+        with Session(engine) as session:  # type: ignore[attr-defined]
             swap = Swap.get_swap()
             if period == SwapPeriod.SWAP:
                 logger.info("Running db logic for SWAP period")
@@ -168,7 +168,7 @@ class Swap(Base):
                     user.done_watching = False
                     session.add(user)
 
-            swap.period = period
+            swap.period = period  # type: ignore[assignment]
             session.add(swap)
             session.commit()
 
@@ -178,7 +178,7 @@ class Swap(Base):
 
     @staticmethod
     def set_swap_channel(channel_id: int) -> None:
-        with Session(engine) as session:
+        with Session(engine) as session:  # type: ignore[attr-defined]
             swap = Swap.get_swap()
             swap.swap_channel_discord_id = channel_id
             session.add(swap)
@@ -220,13 +220,13 @@ class Banned(Base):
 
     @staticmethod
     def list_banned() -> list[Banned]:
-        with Session(engine) as session:
-            return session.query(Banned).all()
+        with Session(engine) as session:  # type: ignore[attr-defined]
+            return session.query(Banned).all()  # type: ignore[no-any-return]
 
 
 def ban_user(user_id: int) -> None:
     logger.info(f"Banning user {user_id}")
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         # check if already banned
         if session.query(Banned).filter_by(user_id=user_id).count() > 0:
             logger.info(f"User {user_id} is already banned")
@@ -243,7 +243,7 @@ def ban_user(user_id: int) -> None:
 
 
 def unban_user(user_id: int) -> None:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         if session.query(Banned).filter_by(user_id=user_id).count() == 0:
             logger.info(f"User {user_id} is not banned")
             raise RuntimeError("User is not banned")
@@ -257,7 +257,7 @@ def check_active_user(user_id: int) -> str | None:
     """
     returns an error message if the user is banned or not in the swap, otherwise None if active
     """
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         banned = session.query(Banned).filter_by(user_id=user_id).count() > 0
         if banned:
             logger.info(f"User {user_id} is banned")
@@ -272,7 +272,7 @@ def check_active_user(user_id: int) -> str | None:
 
 
 def set_gift_done(user_id: int) -> None:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         user = session.query(SwapUser).filter_by(user_id=user_id).one_or_none()
         if user is None:
             logger.info(f"User {user_id} is not in the swap")
@@ -290,13 +290,13 @@ def set_gift_done(user_id: int) -> None:
 
 
 def user_has_letter(user_id: int) -> bool:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         user = session.query(SwapUser).filter_by(user_id=user_id).one()
         return user.letter is not None
 
 
 def join_swap(user_id: int, name: str) -> None:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         is_banned = session.query(Banned).filter_by(user_id=user_id).count() > 0
 
         if is_banned:
@@ -319,7 +319,7 @@ def join_swap(user_id: int, name: str) -> None:
 
 
 def leave_swap(user_id: int) -> None:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one_or_none()
         if swap_user is None:
             logger.info(f"User {user_id} tried to leave swap but was not in swap")
@@ -334,7 +334,7 @@ def set_letter(user_id: int, letter: str) -> None:
     """
     This is how a user sets their letter, to tell their santa what they want
     """
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one()
         assert len(letter) <= 1900, "Letter too long, must be less than 1900 characters"
         logger.info(f"User {user_id} set their letter to {letter}")
@@ -344,33 +344,33 @@ def set_letter(user_id: int, letter: str) -> None:
 
 
 def has_giftee(user_id: int) -> bool:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one()
         return swap_user.giftee_id is not None
 
 
 def has_santa(user_id: int) -> bool:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one()
         return swap_user.santa_id is not None
 
 
 def get_santa(user_id: int) -> SwapUser | None:
-    with Session(engine) as session:
-        return session.query(SwapUser).filter_by(giftee_id=user_id).one_or_none()
+    with Session(engine) as session:  # type: ignore[attr-defined]
+        return session.query(SwapUser).filter_by(giftee_id=user_id).one_or_none()  # type: ignore[no-any-return]
 
 
 def get_giftee(user_id: int) -> SwapUser | None:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         # yes, this is how these work -- to get users giftee, we get the user who has this user as their santa
-        return session.query(SwapUser).filter_by(santa_id=user_id).one_or_none()
+        return session.query(SwapUser).filter_by(santa_id=user_id).one_or_none()  # type: ignore[no-any-return]
 
 
 def set_gift(user_id: int, gift: str) -> None:
     """
     This is how a user sets their gift, to tell their giftee what they're giving them
     """
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one()
         assert len(gift) <= 1900, "Gift too long, must be less than 1900 characters"
         logger.info(f"User {user_id} set their gift for {swap_user.giftee_id}: {gift}")
@@ -380,13 +380,13 @@ def set_gift(user_id: int, gift: str) -> None:
 
 
 def has_letter(user_id: int) -> bool:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one()
         return swap_user.letter is not None
 
 
 def has_gift(user_id: int) -> bool:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one()
         return swap_user.gift is not None
 
@@ -396,7 +396,7 @@ def review_my_letter_embed(user_id: int) -> discord.Embed:
     Read your own letter, to review
     """
 
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         swapuser = session.query(SwapUser).filter_by(user_id=user_id).one()
         if swapuser.letter is None:
             logger.info(
@@ -413,7 +413,7 @@ def review_my_letter_embed(user_id: int) -> discord.Embed:
 
 
 def review_my_gift_embed(user_id: int) -> discord.Embed:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         # read your own gift (what you sent as a recommendation), to review
         swapuser = session.query(SwapUser).filter_by(user_id=user_id).one()
         if swapuser.gift is None:
@@ -446,7 +446,7 @@ def receive_gift_embed(user_id: int) -> discord.Embed:
     """
     This is how a user receives their gift, to see what their santa recommended them
     """
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         # to recieve gift, find the user whos giftee is this user
         santa_user = session.query(SwapUser).filter_by(giftee_id=user_id).one_or_none()
         if santa_user is None:
@@ -458,7 +458,7 @@ def receive_gift_embed(user_id: int) -> discord.Embed:
                 description="If you joined late, you may get assigned one soon, or you'll have to wait for the next swap to start",
             )
 
-        match Swap.get_swap():
+        match Swap.get_swap_period():
             case SwapPeriod.JOIN:
                 logger.info(
                     f"User {user_id} tried to receive their gift, but the swap hasn't started yet (currently in JOIN period)"
@@ -496,7 +496,7 @@ def receive_gift_embed(user_id: int) -> discord.Embed:
 
 
 def read_giftee_letter(user_id: int) -> discord.Embed:
-    with Session(engine) as session:
+    with Session(engine) as session:  # type: ignore[attr-defined]
         # read your giftee's letter, this is how you find out what they want
         #
         # 'their santa_id is my user id', so we read their letter
@@ -521,6 +521,7 @@ def read_giftee_letter(user_id: int) -> discord.Embed:
 
         swap = Swap.get_swap()
 
+        assert isinstance(swap.period, SwapPeriod)
         match swap.period:
             case SwapPeriod.JOIN:
                 logger.info(

@@ -10,6 +10,7 @@ discord = "==2.3.0"
 click = ">=8.1"
 pydantic = {extras = ["dotenv"], version = "*"}
 sqlalchemy = "*"
+sqlalchemy-stubs = "*"
 matplotlib = "*"
 networkx = "*"
 sqlite-backup = "*"

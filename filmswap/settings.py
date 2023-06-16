@@ -2,6 +2,7 @@ from enum import Enum
 
 from pydantic import BaseSettings
 
+
 class Environment(str, Enum):
     PRODUCTION = "prod"
     DEVELOPMENT = "dev"
