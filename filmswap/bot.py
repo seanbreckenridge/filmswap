@@ -104,7 +104,7 @@ def create_bot() -> discord.Client:
             assert isinstance(ctx, discord.Interaction)
             if ctx.guild is not None:
                 await ctx.response.send_message(
-                    "This command only works in DMs -- try using it there instead",
+                    "This command only works in DMs -- try direct messaging this bot instead",
                     ephemeral=True,
                 )
                 logger.info(

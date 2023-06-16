@@ -484,9 +484,6 @@ class Manage(discord.app_commands.Group):
         if await error_if_not_admin(interaction):
             return
 
-        if format == "text":
-            pass
-
         all_users = list_users()
         users_with_both = [
             user for user in all_users if user.giftee_id and user.santa_id
