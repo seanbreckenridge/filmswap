@@ -2,6 +2,7 @@ tags*
 *.pdf
 *.db
 report.txt
+reveal.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

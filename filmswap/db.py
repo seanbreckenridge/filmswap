@@ -285,6 +285,12 @@ def set_gift_done(user_id: int) -> None:
         session.commit()
 
 
+def user_has_letter(user_id: int) -> bool:
+    with Session(engine) as session:
+        user = session.query(SwapUser).filter_by(user_id=user_id).one()
+        return user.letter is not None
+
+
 def join_swap(user_id: int, name: str) -> None:
     with Session(engine) as session:
         is_banned = session.query(Banned).filter_by(user_id=user_id).count() > 0
@@ -452,7 +458,7 @@ def receive_gift_embed(user_id: int) -> discord.Embed:
                 )
                 return discord.Embed(
                     title="The swap hasn't started yet!",
-                    description="Once the 'swap' period has started, you can check again for your gift. If you haven't set your /letter yet, do so now!",
+                    description="Once the 'swap' period has started, you can check again for your gift. If you haven't set your >letter yet, do so now!",
                 )
             case SwapPeriod.SWAP:
                 logger.info(

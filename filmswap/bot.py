@@ -16,6 +16,7 @@ from .db import (
     get_giftee,
     read_giftee_letter,
     set_gift,
+    user_has_letter,
     set_gift_done,
     set_letter,
     leave_swap,
@@ -24,10 +25,9 @@ from .db import (
 from .settings import settings
 from .manage import Manage, JoinSwapButton
 
+
 def help_embed() -> discord.Embed:
-    embed = discord.Embed(
-        title="Help", description="Filmswap Help"
-    )
+    embed = discord.Embed(title="Help", description="Filmswap Help")
     embed.add_field(
         name=">letter",
         value="Set your letter, which your Santa will see. This should include what kinds of films you like/dislike, and can include your accounts on letterboxd/imdb if you have one.",
@@ -86,7 +86,6 @@ def help_embed() -> discord.Embed:
     return embed
 
 
-
 def create_bot() -> discord.Client:
     intents = discord.Intents.default() | discord.Intents(reactions=True)
     bot = commands.Bot(command_prefix=commands.when_mentioned, intents=intents)
@@ -143,10 +142,10 @@ def create_bot() -> discord.Client:
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @bot.tree.command(
-        name="letter",
+        name="letter-help",
         description="Write the letter your santa will see. Use >letter [text] instead",
     )
-    async def letter(interaction: discord.Interaction):
+    async def letter_help(interaction: discord.Interaction):
         logger.info(f"User {interaction.user.id} used letter")
 
         if await error_if_not_in_dm(interaction):
@@ -156,7 +155,7 @@ def create_bot() -> discord.Client:
             return
 
         await interaction.response.send_message(
-            "Use >letter [text] to set your letter, where [text] is what kinds of films you like/dislike/want from your santa",
+            "Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa",
             ephemeral=True,
         )
 
@@ -209,10 +208,10 @@ def create_bot() -> discord.Client:
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @bot.tree.command(
-        name="submit",
+        name="submit-help",
         description="Submit gift for your giftee (your recommendation). Use >submit instead",
     )
-    async def submit(interaction: discord.Interaction):
+    async def submit_help(interaction: discord.Interaction):
         logger.info(f"User {interaction.user.id} submitting gift")
 
         if await error_if_not_in_dm(interaction):
@@ -223,7 +222,7 @@ def create_bot() -> discord.Client:
 
         # prompt the user to set their gift
         await interaction.response.send_message(
-            "Use >submit [text] to submit your gift, where [text] is your gift/film recommendation"
+            "Use `>submit [text]` to submit your gift, where [text] is your gift/film recommendation"
         )
 
     @bot.tree.command(name="receive", description="Read the gift from your Santa")
@@ -337,11 +336,13 @@ def create_bot() -> discord.Client:
                 logger.info(
                     f"User {message.author.id} tried to set letter but it's not the JOIN period"
                 )
-                # already has letter, check if they are allowed to change it right now
-                await message.author.send(
-                    "Sorry, you can't change your letter right now. Wait till the beginning of the next swap to change it",
-                )
-                return
+
+                if user_has_letter(message.author.id):
+                    # already has letter, check if they are allowed to change it right now
+                    await message.author.send(
+                        "Sorry, you can't change your letter right now. Wait till the beginning of the next swap to change it",
+                    )
+                    return
 
             letter_contents = content[len(">letter") :].strip()
 
@@ -350,7 +351,7 @@ def create_bot() -> discord.Client:
                     f"User {message.author.id} tried to set letter but didn't provide any text"
                 )
                 await message.author.send(
-                    "Use >letter [text] to set your letter, where [text] is what kinds of films you like/dislike/want from your santa"
+                    "Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa"
                 )
                 return
 
@@ -395,7 +396,7 @@ def create_bot() -> discord.Client:
                     f"User {message.author.id} tried to set gift but didn't provide any text"
                 )
                 await message.author.send(
-                    "Use >submit [text] to submit your gift, where [text] is your gift/film recommendation"
+                    "Use `>submit [text]` to submit your gift, where [text] is your gift/film recommendation"
                 )
                 return
 
@@ -513,9 +514,7 @@ def create_bot() -> discord.Client:
     @bot.tree.command()
     async def help(interaction: discord.Interaction) -> None:
         logger.info(f"User {interaction.user.id} requested help")
-        await interaction.response.send_message(
-            embed=help_embed(), ephemeral=True
-        )
+        await interaction.response.send_message(embed=help_embed(), ephemeral=True)
 
     @bot.event
     async def setup_hook() -> None:

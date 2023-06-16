@@ -1,5 +1,6 @@
 from pydantic import BaseSettings
 
+
 class Settings(BaseSettings):
     SQLITEDB_PATH: str = "filmswap.db"
     SQL_ECHO: bool = False
@@ -12,4 +13,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-

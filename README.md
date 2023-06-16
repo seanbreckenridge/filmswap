@@ -37,4 +37,4 @@ Then, once all the films are submitted, you can use `/set-period WATCH` to start
 
 ## TODO
 
-- Allow people who join in the `SWAP` period to set their letters
+- add `reveal` command, which is used to create a report of who was whose santa/giftee

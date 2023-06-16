@@ -1,6 +1,10 @@
 from __future__ import annotations
 import os
 from pathlib import Path
+from typing import Literal
+
+import networkx as nx
+import matplotlib.pyplot as plt
 
 import discord
 from discord.ext import commands
@@ -18,8 +22,9 @@ from .db import (
     set_gift_done,
     engine,
     Session,
-    SwapUser
+    SwapUser,
 )
+
 
 def list_users() -> list[SwapUser]:
     with Session(engine) as session:
@@ -63,24 +68,36 @@ class JoinSwapButton(discord.ui.View):
     async def join_swap(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} clicked button to join swap")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} clicked button to join swap"
+        )
 
         try:
             join_swap(interaction.user.id, interaction.user.display_name)
         except Exception as e:
             logger.exception(e, exc_info=True)
             await interaction.response.send_message(f"Error: {e}", ephemeral=True)
+            self.is_finished()
             return
 
         await interaction.user.send(
-            f"You've joined the swap. You can now submit a /letter to tell your santa what you want"
+            f"You've joined the swap. You can now submit a >letter to tell your santa what you want"
         )
+
+        await interaction.response.send_message(
+            f"Joined swap. You can now submit a letter to tell your santa what you want",
+            ephemeral=True,
+        )
+
+        self.is_finished()
 
 
 # returns True if this errored
 async def error_if_not_admin(interaction: discord.Interaction) -> bool:
     if interaction.guild is None or interaction.guild.id != settings.GUILD_ID:
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} tried to use admin command in DMs")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} tried to use admin command in DMs"
+        )
         await interaction.response.send_message(
             "This command can only be used in a server", ephemeral=True
         )
@@ -92,14 +109,18 @@ async def error_if_not_admin(interaction: discord.Interaction) -> bool:
         interaction.user.guild_permissions
         and interaction.user.guild_permissions.administrator
     ):
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} is admin in server, allowing")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} is admin in server, allowing"
+        )
         return False
 
     allowed = any(
         role.name in settings.ALLOWED_ROLES for role in interaction.user.roles
     )
     if not allowed:
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} does not have any matching roles, not allowing")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} does not have any matching roles, not allowing"
+        )
         await interaction.response.send_message(
             "You don't have permission to use this command", ephemeral=True
         )
@@ -109,7 +130,6 @@ async def error_if_not_admin(interaction: discord.Interaction) -> bool:
 
 # create group to manage swaps
 class Manage(discord.app_commands.Group):
-
     def get_bot(self) -> commands.Bot:
         assert hasattr(self, "_bot")
         assert isinstance(self._bot, commands.Bot)  # type: ignore
@@ -263,7 +283,9 @@ class Manage(discord.app_commands.Group):
                     f"Error: No channel set for swap", ephemeral=True
                 )
                 return
-            channel = await self.get_bot().fetch_channel(swap_info.swap_channel_discord_id)  # type: ignore
+            bot = self.get_bot()
+            assert isinstance(swap_info.swap_channel_discord_id, int)
+            channel = await bot.fetch_channel(swap_info.swap_channel_discord_id)
 
             assert isinstance(channel, discord.TextChannel)
             view = JoinSwapButton()
@@ -403,7 +425,9 @@ class Manage(discord.app_commands.Group):
         embed.add_field(
             name="Period", value=swap.period.name if swap.period else "None"
         )
-        channel = self.get_bot().get_channel(swap.swap_channel_discord_id)  # type: ignore
+        bot = self.get_bot()
+        assert isinstance(swap.swap_channel_discord_id, int)
+        channel = bot.get_channel(swap.swap_channel_discord_id)
         assert isinstance(channel, discord.TextChannel) or channel is None
         embed.add_field(name="Channel", value=channel.mention if channel else "None")
 
@@ -429,13 +453,13 @@ class Manage(discord.app_commands.Group):
 
 {os.linesep.join(f'{user.user_id} {user.name}' for user in havent_submitted)}
 
-**{len(dont_have_parters)}** users do not have giftees
-
-{os.linesep.join(f'{user.user_id} {user.name}' for user in dont_have_parters)}
-
 **{len(not_done_watching)}** users have not set /done-watching
 
 {os.linesep.join(f'{user.user_id} {user.name}' for user in not_done_watching)}
+
+**{len(dont_have_parters)}** users do not have giftees
+
+{os.linesep.join(f'{user.user_id} {user.name}' for user in dont_have_parters)}
 
 **{len(dont_have_santas)}** users do not have santas
 
@@ -452,3 +476,65 @@ class Manage(discord.app_commands.Group):
             interaction.channel, discord.TextChannel
         )
         await interaction.channel.send(file=discord.File("report.txt"))
+
+    @discord.app_commands.command(
+        name="reveal", description="Reveal the connections between giftee/santas"
+    )
+    async def reveal(
+        self, interaction: discord.Interaction, format: Literal["text", "graph"]
+    ):
+        logger.info(f"Revealing connections -- {format}")
+
+        if await error_if_not_admin(interaction):
+            return
+
+        if format == "text":
+            pass
+
+        all_users = list_users()
+        users_with_both = [
+            user for user in all_users if user.giftee_id and user.santa_id
+        ]
+
+        if len(users_with_both) == 0:
+            await interaction.response.send_message(
+                f"Error: No users have both a giftee and a santa", ephemeral=True
+            )
+            return
+
+        id_to_names = {user.user_id: user.name for user in all_users}
+
+        bot = self.get_bot()
+        user_obj = await bot.fetch_user(interaction.user.id)
+
+        if format == "text":
+            report = os.linesep.join(
+                f"{id_to_names.get(user.user_id, user.user_id)} is gifting to {id_to_names.get(user.giftee_id, user.giftee_id)} and is being gifted by {id_to_names.get(user.santa_id, user.santa_id)}"
+                for user in users_with_both
+            )
+            Path("reveal.txt").write_text(report)
+
+            await user_obj.send(file=discord.File("reveal.txt"))
+
+        else:
+            graph = nx.DiGraph()
+            for user in users_with_both:
+                graph.add_edge(user.name, id_to_names[user.giftee_id], color="red")
+
+            options = {
+                "node_color": "blue",
+                "node_size": 1,
+                "edge_color": "grey",
+                "width": 3,
+                "arrowstyle": "-|>",
+                "arrowsize": 12,
+            }
+
+            nx.draw_networkx(graph, arrows=True, **options)
+            plt.savefig("reveal.png")
+
+            await user_obj.send(file=discord.File("reveal.png"))
+
+        await interaction.response.send_message(
+            f"Sent reveal to {interaction.user.display_name}", ephemeral=True
+        )
