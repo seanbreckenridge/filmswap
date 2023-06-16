@@ -37,4 +37,4 @@ Then, once all the films are submitted, you can use `/set-period WATCH` to start
 
 ## TODO
 
-- add `reveal` command, which is used to create a report of who was whose santa/giftee
+- create snapshot command, which saves the current state of the swap to a file, for reference/in-case we need to recover state state
