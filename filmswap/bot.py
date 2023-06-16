@@ -24,6 +24,68 @@ from .db import (
 from .settings import settings
 from .manage import Manage, JoinSwapButton
 
+def help_embed() -> discord.Embed:
+    embed = discord.Embed(
+        title="Help", description="Filmswap Help"
+    )
+    embed.add_field(
+        name=">letter",
+        value="Set your letter, which your Santa will see. This should include what kinds of films you like/dislike, and can include your accounts on letterboxd/imdb if you have one.",
+        inline=False,
+    )
+    embed.add_field(
+        name=">submit",
+        value="Submit your gift/film-recommendation to your giftee",
+        inline=False,
+    )
+    embed.add_field(
+        name="/read",
+        value="Read your letter from your giftee. After you picked something, >submit",
+        inline=False,
+    )
+    embed.add_field(
+        name="/receive",
+        value="Read your gift from your Santa. After you've finished watching, /done-watching",
+        inline=False,
+    )
+    embed.add_field(
+        name="/review-letter",
+        value="Review your current letter",
+        inline=True,
+    )
+    embed.add_field(
+        name="/review-gift",
+        value="Review the gift you submitted",
+        inline=True,
+    )
+    embed.add_field(
+        name=">write-santa",
+        value="Write an anonymous letter to your Santa",
+        inline=True,
+    )
+    embed.add_field(
+        name=">write-giftee",
+        value="Write an anonymous letter to your giftee",
+        inline=True,
+    )
+    embed.add_field(
+        name="/done-watching",
+        value="Mark your gift as watched",
+        inline=True,
+    )
+    embed.add_field(
+        name="/help",
+        value="Show this help message",
+        inline=True,
+    )
+    embed.add_field(
+        name="/leave",
+        value="Leave the filmswap, if you're currently in it",
+        inline=True,
+    )
+    return embed
+
+
 
 def create_bot() -> discord.Client:
     intents = discord.Intents.default() | discord.Intents(reactions=True)
@@ -448,6 +510,13 @@ def create_bot() -> discord.Client:
                 await giftee_user.send(embed=embed)
                 await message.author.send("Your message has been sent")
 
+    @bot.tree.command()
+    async def help(interaction: discord.Interaction) -> None:
+        logger.info(f"User {interaction.user.id} requested help")
+        await interaction.response.send_message(
+            embed=help_embed(), ephemeral=True
+        )
+
     @bot.event
     async def setup_hook() -> None:
         logger.info("Setting up persistent join button")
@@ -476,7 +545,7 @@ def create_bot() -> discord.Client:
 
         bot.tree.add_command(manager)
         bot.tree.copy_global_to(guild=discord.Object(id=settings.GUILD_ID))
-        # await bot.tree.sync(guild=discord.Object(id=settings.GUILD_ID))
+        await bot.tree.sync(guild=discord.Object(id=settings.GUILD_ID))
 
         await bot.tree.sync()
 
