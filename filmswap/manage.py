@@ -263,12 +263,12 @@ class Manage(discord.app_commands.Group):
                     f"Error: No channel set for swap", ephemeral=True
                 )
                 return
-            channel = self.get_bot().fetch_channel(swap_info.swap_channel_discord_id)  # type: ignore
+            channel = await self.get_bot().fetch_channel(swap_info.swap_channel_discord_id)  # type: ignore
 
             assert isinstance(channel, discord.TextChannel)
             view = JoinSwapButton()
             msg = await channel.send(
-                "Join the swap by clicking the button below!",
+                "Join the film swap by clicking the button below!",
                 view=view,
             )
 

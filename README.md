@@ -6,19 +6,13 @@ bot to anonymously swap films with other users to watch
 
 Run on `python 3.11.3`
 
-```
-pip install git+
-```
-
-## Install/Run:
-
 Create an `.env` file with values like:
 
 ```
 SQLITEDB_PATH="filmswap.db"
 SQL_ECHO=0
 GUILD_ID=9243234234
-ALLOWED_ROLES=filmwap-mod 'chat moderators'
+ALLOWED_ROLES='["filmwap-mod", "Chat Moderators"]'
 ```
 
 ```
@@ -31,7 +25,6 @@ pipenv run bot
 ```
 
 This runs a swap as a singleton, adding multiple swaps per server was originally supported but it makes the commands a bit more complicated, and I don't think its worth the complication.
-
 To create a swap, run `/create`, then `/set-channel`, then `/send-join-message` to send a message to the channel to join the swap.
 
 Once users have joined then can set their `>letter`s telling the bot what they want to watch
