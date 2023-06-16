@@ -1,4 +1,5 @@
 from __future__ import annotations
+import io
 import os
 from pathlib import Path
 from typing import Literal
@@ -13,9 +14,13 @@ from logzero import logger
 
 from .settings import settings
 from .db import (
+    engine,
+    Session,
     SwapPeriod,
     Swap,
     Banned,
+    read_giftee_letter,
+    receive_gift_embed,
     ban_user,
     unban_user,
     join_swap,
@@ -153,6 +158,58 @@ class Manage(discord.app_commands.Group):
             await interaction.response.send_message(f"Error: {e}", ephemeral=True)
             return
 
+    async def _set_period_post_hook(
+        self, interaction: discord.Interaction, successfully_set_to: SwapPeriod
+    ) -> None:
+        """
+        This handles sending out the letters to users when the swap period is set to SWAP
+        And sending the gifts when the swap period is set to WATCH
+
+        This runs after the period is set/responding to the user, so even if it fails, users
+        can still run /read, /receive themselves
+        """
+
+        if successfully_set_to == SwapPeriod.SWAP:
+            with Session(engine) as session:
+                users = session.query(SwapUser).all()
+                for user in users:
+                    logger.info(f"Sending {user.user_id} their giftees letter")
+                    if user.giftee_id is None:
+                        logger.info(
+                            f"Cannot send letter to {user.user_id} {user.name} as they have no giftee id"
+                        )
+                        continue
+                    try:
+                        letter_embed = read_giftee_letter(user.user_id)
+
+                        user_dm = await self.get_bot().fetch_user(user.user_id)
+                        await user_dm.send(embed=letter_embed)
+                    except Exception as e:
+                        logger.exception(
+                            f"Error sending letter to user {user.user_id}: {e}",
+                            exc_info=True,
+                        )
+        elif successfully_set_to == SwapPeriod.WATCH:
+            with Session(engine) as session:
+                users = session.query(SwapUser).all()
+                for user in users:
+                    logger.info(f"Sending {user.user_id} their giftees gift")
+                    if user.giftee_id is None:
+                        logger.info(
+                            f"Cannot send gift to {user.user_id} {user.name} as they have no giftee id"
+                        )
+                        continue
+                    try:
+                        gift_embed = receive_gift_embed(user.user_id)
+
+                        user_dm = await self.get_bot().fetch_user(user.user_id)
+                        await user_dm.send(embed=gift_embed)
+                    except Exception as e:
+                        logger.exception(
+                            f"Error sending gift to user {user.user_id}: {e}",
+                            exc_info=True,
+                        )
+
     @discord.app_commands.command(
         name="set-period",
         description="Set the period of the swap (e.g. join, swap, watch))",
@@ -189,6 +246,7 @@ class Manage(discord.app_commands.Group):
             msg += f"\n{additional_message}"
 
         await interaction.response.send_message(msg, ephemeral=True)
+        await self._set_period_post_hook(interaction, new_period)
 
     @set_period.autocomplete("period")
     async def set_period_autocomplete_period(
@@ -470,8 +528,10 @@ class Manage(discord.app_commands.Group):
 {os.linesep.join(f'{user.user_id}' for user in banned)}
 """
 
-        Path("report.txt").write_text(report)
-        await interaction.user.send(file=discord.File("report.txt"))
+        with io.BytesIO() as f:
+            f.write(report.encode("utf-8"))
+            f.seek(0)
+            await interaction.user.send(file=discord.File(f, "report.txt"))
 
     @discord.app_commands.command(
         name="reveal", description="Reveal the connections between giftee/santas"
@@ -479,7 +539,7 @@ class Manage(discord.app_commands.Group):
     async def reveal(
         self, interaction: discord.Interaction, format: Literal["text", "graph"]
     ):
-        logger.info(f"Revealing connections -- {format}")
+        logger.info(f"User {interaction.user.id} revealing connections -- {format}")
 
         if await error_if_not_admin(interaction):
             return
@@ -505,12 +565,14 @@ class Manage(discord.app_commands.Group):
                 f"{id_to_names.get(user.user_id, user.user_id)} is gifting to {id_to_names.get(user.giftee_id, user.giftee_id)} and is being gifted by {id_to_names.get(user.santa_id, user.santa_id)}"
                 for user in users_with_both
             )
-            Path("reveal.txt").write_text(report)
-
-            await user_obj.send(file=discord.File("reveal.txt"))
+            with io.BytesIO() as f:
+                f.write(report.encode("utf-8"))
+                f.seek(0)
+                await interaction.user.send(file=discord.File(f, "report.txt"))
 
         else:
             graph = nx.DiGraph()
+            plt.clf()
             for user in users_with_both:
                 graph.add_edge(user.name, id_to_names[user.giftee_id], color="red")
 
@@ -526,9 +588,10 @@ class Manage(discord.app_commands.Group):
 
             nx.draw_networkx(graph, arrows=True, **options)
             plt.box(False)
-            plt.savefig("reveal.png", pad_inches=0.1, transparent=False, bbox_inches="tight")
-
-            await user_obj.send(file=discord.File("reveal.png"))
+            with io.BytesIO() as f:
+                plt.savefig(f, pad_inches=0.1, transparent=False, bbox_inches="tight")
+                f.seek(0)
+                await user_obj.send(file=discord.File(f, "reveal.png"))
 
         await interaction.response.send_message(
             f"Sent reveal to {interaction.user.display_name}", ephemeral=True

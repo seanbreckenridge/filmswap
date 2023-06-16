@@ -3,6 +3,7 @@ tags*
 *.db
 report.txt
 reveal.*
+backups/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -12,6 +12,7 @@ pydantic = {extras = ["dotenv"], version = "*"}
 sqlalchemy = "*"
 matplotlib = "*"
 networkx = "*"
+sqlite-backup = "*"
 
 [dev-packages]
 ipdb = "*"

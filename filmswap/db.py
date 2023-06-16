@@ -1,6 +1,8 @@
 from __future__ import annotations
 import random
+import os
 import enum
+import time
 
 import discord
 
@@ -12,6 +14,7 @@ from sqlalchemy import (
     Boolean,
     Enum,
 )
+from sqlite_backup.core import sqlite_backup
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.ext.declarative import declarative_base
@@ -153,6 +156,7 @@ class Swap(Base):
                 except RuntimeError as e:
                     msg = f"Warning: couldnt match users -- {e}"
             elif period == SwapPeriod.JOIN:
+                snapshot_database()
                 logger.info("Running db logic for JOIN period")
                 # need to remove all santa_id/giftee_id's back to null, and remove gifts from users
                 users = session.query(SwapUser).all()
@@ -353,12 +357,13 @@ def has_santa(user_id: int) -> bool:
 
 def get_santa(user_id: int) -> SwapUser | None:
     with Session(engine) as session:
-        return session.query(SwapUser).filter_by(santa_id=user_id).one_or_none()
+        return session.query(SwapUser).filter_by(giftee_id=user_id).one_or_none()
 
 
 def get_giftee(user_id: int) -> SwapUser | None:
     with Session(engine) as session:
-        return session.query(SwapUser).filter_by(giftee_id=user_id).one_or_none()
+        # yes, this is how these work -- to get users giftee, we get the user who has this user as their santa
+        return session.query(SwapUser).filter_by(santa_id=user_id).one_or_none()
 
 
 def set_gift(user_id: int, gift: str) -> None:
@@ -420,7 +425,8 @@ def review_my_gift_embed(user_id: int) -> discord.Embed:
                 description="Use the `>submit` command to set your gift",
             )
 
-        given_to = session.query(SwapUser).filter_by(giftee_id=user_id).one_or_none()
+        # find the user who has this user as their santa
+        given_to = session.query(SwapUser).filter_by(santa_id=user_id).one_or_none()
 
         if given_to is None:
             logger.info(
@@ -441,6 +447,7 @@ def receive_gift_embed(user_id: int) -> discord.Embed:
     This is how a user receives their gift, to see what their santa recommended them
     """
     with Session(engine) as session:
+        # to recieve gift, find the user whos giftee is this user
         santa_user = session.query(SwapUser).filter_by(giftee_id=user_id).one_or_none()
         if santa_user is None:
             logger.info(
@@ -473,7 +480,7 @@ def receive_gift_embed(user_id: int) -> discord.Embed:
 
         if santa_user.gift is None:
             logger.info(
-                f"User {user_id} tried to receive their gift, but their santa {santa_user.id} {santa_user.name} hasn't set it yet"
+                f"User {user_id} tried to receive their gift, but their santa {santa_user.user_id} {santa_user.name} hasn't set it yet"
             )
             return discord.Embed(
                 title="You haven't received a gift yet!",
@@ -529,6 +536,13 @@ def read_giftee_letter(user_id: int) -> discord.Embed:
         let = f"""Dear Santa,\n{giftee_user.letter}\nLove, {giftee_user.name}"""
         embed = discord.Embed(title="Your giftee sent a letter!", description=let)
         return embed
+
+
+def snapshot_database() -> None:
+    os.makedirs("backups", exist_ok=True)
+    logger.info("Making backup of database...")
+
+    sqlite_backup(settings.SQLITEDB_PATH, f"backups/{time.time()}.sqlite")
 
 
 # sqlite database which stores data

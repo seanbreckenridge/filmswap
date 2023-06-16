@@ -6,6 +6,13 @@ bot to anonymously swap films with other users to watch
 
 Run on `python 3.11.3`
 
+Requies:
+
+- embed links
+- attach files
+- use slash commands
+- send messages
+
 Create an `.env` file with values like:
 
 ```
@@ -34,7 +41,3 @@ Then, `/set-period SWAP` will start the swap period, matching users up with sant
 If people join late, you can use admin `match-users` command to match them up with other users who joined late (Requires at least 2 late joiners)
 
 Then, once all the films are submitted, you can use `/set-period WATCH` to start the watch period, where users can watch the films they were given, and use `/done-watching` to mark them as watched (or an admin can use `/set-user-done-watching` to do so)
-
-## TODO
-
-- create snapshot command, which saves the current state of the swap to a file, for reference/in-case we need to recover state state
