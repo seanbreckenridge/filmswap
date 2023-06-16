@@ -471,11 +471,7 @@ class Manage(discord.app_commands.Group):
 """
 
         Path("report.txt").write_text(report)
-
-        assert interaction.channel is not None and isinstance(
-            interaction.channel, discord.TextChannel
-        )
-        await interaction.channel.send(file=discord.File("report.txt"))
+        await interaction.user.send(file=discord.File("report.txt"))
 
     @discord.app_commands.command(
         name="reveal", description="Reveal the connections between giftee/santas"
@@ -525,13 +521,15 @@ class Manage(discord.app_commands.Group):
                 "node_color": "blue",
                 "node_size": 1,
                 "edge_color": "grey",
+                "font_size": 8,
                 "width": 3,
                 "arrowstyle": "-|>",
                 "arrowsize": 12,
             }
 
             nx.draw_networkx(graph, arrows=True, **options)
-            plt.savefig("reveal.png")
+            plt.box(False)
+            plt.savefig("reveal.png", pad_inches=0.1, transparent=False, bbox_inches="tight")
 
             await user_obj.send(file=discord.File("reveal.png"))
 
