@@ -1,6 +1,7 @@
 from __future__ import annotations
 from logzero import logger  # type: ignore[import]
 
+import os
 import discord
 import discord.abc
 from discord.ext import commands
@@ -97,7 +98,7 @@ def create_bot() -> discord.Client:
                     "Hey, that command only works in DMs -- try using it here instead"
                 )
                 logger.info(
-                    f"User {ctx.author.id} used command in guild, sending them a DM"
+                    f"User {ctx.author.id} {ctx.author.display_name} used command in guild, sending them a DM"
                 )
                 return True
         else:
@@ -108,7 +109,7 @@ def create_bot() -> discord.Client:
                     ephemeral=True,
                 )
                 logger.info(
-                    f"User {ctx.user.id} used command in guild, telling them to use in DM instead"
+                    f"User {ctx.user.id} {ctx.user.display_name} used command in guild, telling them to use in DM instead"
                 )
                 return True
         return False
@@ -130,7 +131,7 @@ def create_bot() -> discord.Client:
 
     @bot.tree.command(name="review-letter", description="Review your letter")  # type: ignore[arg-type]
     async def review_letter(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} reviewing their own letter")
+        logger.info(f"User {interaction.user.id} {interaction.user.name} reviewing their own letter")
 
         if await error_if_not_in_dm(interaction):
             return
@@ -146,7 +147,7 @@ def create_bot() -> discord.Client:
         description="Write the letter your santa will see. Use >letter [text] instead",
     )
     async def letter_help(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} used letter")
+        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used letter")
 
         if await error_if_not_in_dm(interaction):
             return
@@ -164,7 +165,7 @@ def create_bot() -> discord.Client:
         description="Write an anonymous letter to your santa. Use >write-santa [text] instead",
     )
     async def write_santa_help(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} used write-santa")
+        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used write-santa")
 
         if await error_if_not_in_dm(interaction):
             return
@@ -182,7 +183,7 @@ def create_bot() -> discord.Client:
         description="Write an anonymous letter to your giftee. Use >write-giftee [text] instead",
     )
     async def write_giftee_help(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} used write-giftee")
+        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used write-giftee")
 
         if await error_if_not_in_dm(interaction):
             return
@@ -198,7 +199,7 @@ def create_bot() -> discord.Client:
     @bot.tree.command(name="review-gift", description="Review your gift")  # type: ignore[arg-type]
     async def review_gift(interaction: discord.Interaction) -> None:
         logger.info(
-            f"User {interaction.user.id} viewing their own gift (the one they submitted)"
+            f"User {interaction.user.id} {interaction.user.display_name} viewing their own gift (the one they submitted)"
         )
 
         if await not_active_user(interaction):
@@ -212,7 +213,7 @@ def create_bot() -> discord.Client:
         description="Submit gift for your giftee (your recommendation). Use >submit instead",
     )
     async def submit_help(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} submitting gift")
+        logger.info(f"User {interaction.user.id} {interaction.user.display_name} submitting gift")
 
         if await error_if_not_in_dm(interaction):
             return
@@ -227,7 +228,7 @@ def create_bot() -> discord.Client:
 
     @bot.tree.command(name="receive", description="Read the gift from your Santa")  # type: ignore[arg-type]
     async def receive(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} used receive")
+        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used receive")
 
         if await error_if_not_in_dm(interaction):
             return
@@ -240,27 +241,27 @@ def create_bot() -> discord.Client:
 
     @bot.tree.command(name="read", description="Read the letter from your giftee")  # type: ignore[arg-type]
     async def read(interaction: discord.Interaction) -> None:
+        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used read")
+
         if await error_if_not_in_dm(interaction):
             return
 
         if await not_active_user(interaction):
             return
 
-        logger.info(f"User {interaction.user.id} used read")
-
         letter = read_giftee_letter(interaction.user.id)
         await interaction.response.send_message(embed=letter, ephemeral=True)
 
     @bot.tree.command(name="leave", description="Leave the swap")  # type: ignore[arg-type]
     async def leave(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} used leave")
+        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used leave")
 
         if await error_if_not_in_dm(interaction):
             return
 
         if Swap.get_swap_period() != SwapPeriod.JOIN:
             logger.info(
-                f"User {interaction.user.id} tried to leave the swap but it's not the JOIN period"
+                f"User {interaction.user.id} {interaction.user.display_name} tried to leave the swap but it's not the JOIN period"
             )
             await interaction.response.send_message(
                 "Sorry, you can't leave the swap right now. Wait till the beginning of the next swap period to leave",
@@ -282,14 +283,14 @@ def create_bot() -> discord.Client:
 
     @bot.tree.command(name="done-watching", description="Mark your gift as watched")  # type: ignore[arg-type]
     async def done_watching(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} used done-watching")
+        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used done-watching")
 
         if await error_if_not_in_dm(interaction):
             return
 
         if Swap.get_swap_period() != SwapPeriod.WATCH:
             logger.info(
-                f"User {interaction.user.id} tried to mark their gift as watched but it's not the WATCH period"
+                f"User {interaction.user.id} {interaction.user.display_name} tried to mark their gift as watched but it's not the WATCH period"
             )
             await interaction.response.send_message(
                 "Can't set your gift as watched till the watch period starts",
@@ -512,7 +513,7 @@ def create_bot() -> discord.Client:
 
     @bot.tree.command()  # type: ignore[arg-type]
     async def help(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} requested help")
+        logger.info(f"User {interaction.user.id} {interaction.user.display_name} requested help")
         await interaction.response.send_message(embed=help_embed(), ephemeral=True)
 
     @bot.event
@@ -540,6 +541,8 @@ def create_bot() -> discord.Client:
 
         manager = Manage(name="filmswap-manage", description="Manage swaps")
         manager._bot = bot  # type: ignore
+
+        os.makedirs(settings.BACKUP_DIR, exist_ok=True)
 
         bot.tree.add_command(manager)
         if settings.ENVIRONMENT == Environment.DEVELOPMENT:

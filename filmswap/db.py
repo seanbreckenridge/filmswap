@@ -540,10 +540,9 @@ def read_giftee_letter(user_id: int) -> discord.Embed:
 
 
 def snapshot_database() -> None:
-    os.makedirs("backups", exist_ok=True)
     logger.info("Making backup of database...")
 
-    sqlite_backup(settings.SQLITEDB_PATH, f"backups/{time.time()}.sqlite")
+    sqlite_backup(settings.SQLITEDB_PATH, os.path.join(settings.BACKUP_DIR, f"{int(time.time())}.sqlite"))
 
 
 # sqlite database which stores data

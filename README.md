@@ -25,6 +25,8 @@ SQLITEDB_PATH="filmswap.db"
 SQL_ECHO=0
 GUILD_ID=9243234234
 ALLOWED_ROLES='["filmswap-mod", "Chat Moderators"]'
+ENVIRONMENT=prod
+BACKUP_DIR="backups"
 ```
 
 ```

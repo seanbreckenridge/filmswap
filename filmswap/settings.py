@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     GUILD_ID: int = -1
     ALLOWED_ROLES: list[str] = []
     ENVIRONMENT: str = Environment.DEVELOPMENT
+    BACKUP_DIR: str = "backups"
 
     class Config:
         case_sensitive = False

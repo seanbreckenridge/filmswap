@@ -1,6 +1,7 @@
 from __future__ import annotations
 import io
 import os
+from pathlib import Path
 from typing import Literal
 
 import networkx as nx  # type: ignore[import]
@@ -13,6 +14,7 @@ from logzero import logger  # type: ignore[import]
 
 from .settings import settings
 from .db import (
+    snapshot_database,
     Session,
     SwapPeriod,
     Swap,
@@ -595,4 +597,22 @@ class Manage(discord.app_commands.Group):
 
         await interaction.response.send_message(
             f"Sent reveal to {interaction.user.display_name}", ephemeral=True
+        )
+
+    @discord.app_commands.command(  # type: ignore[arg-type]
+        name="backup-db", description="Backup the database"
+    )
+    async def backup(self, interaction: discord.Interaction) -> None:
+        logger.info(f"User {interaction.user.id} backing up database")
+
+        if await error_if_not_admin(interaction):
+            return
+
+        snapshot_database()
+
+        files = Path(settings.BACKUP_DIR).glob("*.sqlite")
+        latest = max(files, key=os.path.getmtime)
+
+        await interaction.response.send_message(
+            f"Saved database backup to {latest.name}", ephemeral=True
         )
