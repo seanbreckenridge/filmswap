@@ -193,7 +193,7 @@ class Manage(discord.app_commands.Group):
             with Session(engine) as session:
                 users = session.query(SwapUser).all()
                 for user in users:
-                    logger.info(f"Sending {user.user_id} their giftees gift")
+                    logger.info(f"Sending {user.user_id} their santas gift")
                     if user.giftee_id is None:
                         logger.info(
                             f"Cannot send gift to {user.user_id} {user.name} as they have no giftee id"

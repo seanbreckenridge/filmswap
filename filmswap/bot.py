@@ -160,10 +160,10 @@ def create_bot() -> discord.Client:
         )
 
     @bot.tree.command(
-        name="write-santa",
+        name="write-santa-help",
         description="Write an anonymous letter to your santa. Use >write-santa [text] instead",
     )
-    async def write_santa(interaction: discord.Interaction):
+    async def write_santa_help(interaction: discord.Interaction):
         logger.info(f"User {interaction.user.id} used write-santa")
 
         if await error_if_not_in_dm(interaction):
@@ -173,15 +173,15 @@ def create_bot() -> discord.Client:
             return
 
         await interaction.response.send_message(
-            "Use >write-santa [text] to set your letter, where [text] is what you want to say to your santa",
+            "Use `>write-santa [text]` to set your letter, where [text] is what you want to say to your santa",
             ephemeral=True,
         )
 
     @bot.tree.command(
-        name="write-giftee",
+        name="write-giftee-help",
         description="Write an anonymous letter to your giftee. Use >write-giftee [text] instead",
     )
-    async def write_giftee(interaction: discord.Interaction):
+    async def write_giftee_help(interaction: discord.Interaction):
         logger.info(f"User {interaction.user.id} used write-giftee")
 
         if await error_if_not_in_dm(interaction):
@@ -191,7 +191,7 @@ def create_bot() -> discord.Client:
             return
 
         await interaction.response.send_message(
-            "Use >write-giftee [text] to set your letter, where [text] is what you want to say to your giftee",
+            "Use `>write-giftee [text]` to set your letter, where [text] is what you want to say to your giftee",
             ephemeral=True,
         )
 
