@@ -230,8 +230,6 @@ class Manage(discord.app_commands.Group):
             )
             return
 
-        # TODO: make a snapshot of all data here so that we can recover if this happens to delete all the swaps
-
         try:
             additional_message = Swap.set_swap_period(new_period)
         except Exception as e:
