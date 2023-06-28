@@ -261,7 +261,7 @@ def check_active_user(user_id: int) -> str | None:
         banned = session.query(Banned).filter_by(user_id=user_id).count() > 0
         if banned:
             logger.info(f"User {user_id} is banned")
-            return "You are banned from the swap, ask a mod to unban you"
+            return "You are banned from the swap, If you've finished your gift, please post your thoughts in the swap thread and ask a mod to unban you"
 
         user = session.query(SwapUser).filter_by(user_id=user_id).count() > 0
         if user:
@@ -301,7 +301,9 @@ def join_swap(user_id: int, name: str) -> None:
 
         if is_banned:
             logger.info(f"User {user_id} banned while trying to join swap")
-            raise RuntimeError("You are banned from the swap, ask a mod to unban you")
+            raise RuntimeError("You are banned from the swap, if you have finished your previous gift, please post your thoughts in the swap thread and ask a mod to unban you")
+
+        # TODO: make sure its join phase
 
         # check if user already in swap
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one_or_none()
@@ -542,7 +544,10 @@ def read_giftee_letter(user_id: int) -> discord.Embed:
 def snapshot_database() -> None:
     logger.info("Making backup of database...")
 
-    sqlite_backup(settings.SQLITEDB_PATH, os.path.join(settings.BACKUP_DIR, f"{int(time.time())}.sqlite"))
+    sqlite_backup(
+        settings.SQLITEDB_PATH,
+        os.path.join(settings.BACKUP_DIR, f"{int(time.time())}.sqlite"),
+    )
 
 
 # sqlite database which stores data
