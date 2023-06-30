@@ -61,12 +61,12 @@ def help_embed() -> discord.Embed:
     )
     embed.add_field(
         name=">write-santa",
-        value="Write an anonymous letter to your Santa",
+        value="Write an anonymous message to your Santa",
         inline=True,
     )
     embed.add_field(
         name=">write-giftee",
-        value="Write an anonymous letter to your giftee",
+        value="Write an anonymous message to your giftee",
         inline=True,
     )
     embed.add_field(
@@ -131,7 +131,9 @@ def create_bot() -> discord.Client:
 
     @bot.tree.command(name="review-letter", description="Review your letter")  # type: ignore[arg-type]
     async def review_letter(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} {interaction.user.name} reviewing their own letter")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.name} reviewing their own letter"
+        )
 
         if await error_if_not_in_dm(interaction):
             return
@@ -147,7 +149,9 @@ def create_bot() -> discord.Client:
         description="Write the letter your santa will see. Use >letter [text] instead",
     )
     async def letter_help(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used letter")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} used letter"
+        )
 
         if await error_if_not_in_dm(interaction):
             return
@@ -156,16 +160,18 @@ def create_bot() -> discord.Client:
             return
 
         await interaction.response.send_message(
-            "Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa",
+            "Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa. If you have a a letterboxd/imdb you can include that as well",
             ephemeral=True,
         )
 
     @bot.tree.command(  # type: ignore[arg-type]
         name="write-santa-help",
-        description="Write an anonymous letter to your santa. Use >write-santa [text] instead",
+        description="Write an anonymous message to your santa. Use >write-santa [text] instead",
     )
     async def write_santa_help(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used write-santa")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} used write-santa"
+        )
 
         if await error_if_not_in_dm(interaction):
             return
@@ -174,16 +180,18 @@ def create_bot() -> discord.Client:
             return
 
         await interaction.response.send_message(
-            "Use `>write-santa [text]` to set your letter, where [text] is what you want to say to your santa",
+            "Use `>write-santa [text]` to send an anonymous message, where [text] is what you want to say to your santa",
             ephemeral=True,
         )
 
     @bot.tree.command(  # type: ignore[arg-type]
         name="write-giftee-help",
-        description="Write an anonymous letter to your giftee. Use >write-giftee [text] instead",
+        description="Write an anonymous message to your giftee. Use >write-giftee [text] instead",
     )
     async def write_giftee_help(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used write-giftee")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} used write-giftee"
+        )
 
         if await error_if_not_in_dm(interaction):
             return
@@ -192,7 +200,7 @@ def create_bot() -> discord.Client:
             return
 
         await interaction.response.send_message(
-            "Use `>write-giftee [text]` to set your letter, where [text] is what you want to say to your giftee",
+            "Use `>write-giftee [text]` to send an anonymous message, where [text] is what you want to say to your giftee",
             ephemeral=True,
         )
 
@@ -213,7 +221,9 @@ def create_bot() -> discord.Client:
         description="Submit gift for your giftee (your recommendation). Use >submit instead",
     )
     async def submit_help(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} submitting gift")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} submitting gift"
+        )
 
         if await error_if_not_in_dm(interaction):
             return
@@ -228,7 +238,9 @@ def create_bot() -> discord.Client:
 
     @bot.tree.command(name="receive", description="Read the gift from your Santa")  # type: ignore[arg-type]
     async def receive(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used receive")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} used receive"
+        )
 
         if await error_if_not_in_dm(interaction):
             return
@@ -241,7 +253,9 @@ def create_bot() -> discord.Client:
 
     @bot.tree.command(name="read", description="Read the letter from your giftee")  # type: ignore[arg-type]
     async def read(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used read")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} used read"
+        )
 
         if await error_if_not_in_dm(interaction):
             return
@@ -254,7 +268,9 @@ def create_bot() -> discord.Client:
 
     @bot.tree.command(name="leave", description="Leave the swap")  # type: ignore[arg-type]
     async def leave(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used leave")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} used leave"
+        )
 
         if await error_if_not_in_dm(interaction):
             return
@@ -283,7 +299,9 @@ def create_bot() -> discord.Client:
 
     @bot.tree.command(name="done-watching", description="Mark your gift as watched")  # type: ignore[arg-type]
     async def done_watching(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} used done-watching")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} used done-watching"
+        )
 
         if await error_if_not_in_dm(interaction):
             return
@@ -352,7 +370,7 @@ def create_bot() -> discord.Client:
                     f"User {message.author.id} tried to set letter but didn't provide any text"
                 )
                 await message.author.send(
-                    "Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa"
+                    "Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa. If you have a letterboxd/imdb you can include that as well"
                 )
                 return
 
@@ -513,7 +531,9 @@ def create_bot() -> discord.Client:
 
     @bot.tree.command()  # type: ignore[arg-type]
     async def help(interaction: discord.Interaction) -> None:
-        logger.info(f"User {interaction.user.id} {interaction.user.display_name} requested help")
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} requested help"
+        )
         await interaction.response.send_message(embed=help_embed(), ephemeral=True)
 
     @bot.event

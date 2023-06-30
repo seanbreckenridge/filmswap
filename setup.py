@@ -19,11 +19,7 @@ setup(
     zip_safe=False,
     keywords="",
     python_requires=">=3.7",
-    entry_points={
-        "console_scripts": [
-            "filmswap = filmswap.__main__:main"
-        ]
-    },
+    entry_points={"console_scripts": ["filmswap = filmswap.__main__:main"]},
     extras_require={
         "testing": [
             "mypy",

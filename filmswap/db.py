@@ -301,11 +301,15 @@ def join_swap(user_id: int, name: str) -> None:
 
         if is_banned:
             logger.info(f"User {user_id} banned while trying to join swap")
-            raise RuntimeError("You are banned from the swap, if you have finished your previous gift, please post your thoughts in the swap thread and ask a mod to unban you")
+            raise RuntimeError(
+                "You are banned from the swap, if you have finished your previous gift, please post your thoughts in the swap thread and ask a mod to unban you"
+            )
 
         if Swap.get_swap_period() == SwapPeriod.WATCH:
             logger.info(f"User {user_id} tried to join swap in WATCH period")
-            raise RuntimeError("You cannot join the swap while one is already going on. Please wait until the next swap is announced")
+            raise RuntimeError(
+                "You cannot join the swap while one is already going on. Please wait until the next swap is announced"
+            )
 
         # check if user already in swap
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one_or_none()
