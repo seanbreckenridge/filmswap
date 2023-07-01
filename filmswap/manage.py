@@ -64,6 +64,17 @@ class JoinSwapButton(discord.ui.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
 
+    def get_bot(self) -> commands.Bot:
+        assert hasattr(self, "_bot")
+        assert isinstance(self._bot, commands.Bot)  # type: ignore
+        return self._bot  # type: ignore
+
+    @property
+    def swap_role_id(self) -> int:
+        resp = self.get_bot().filmswap_role_id()  # type: ignore
+        assert isinstance(resp, int)
+        return resp
+
     @discord.ui.button(
         label="Join swap",
         style=discord.ButtonStyle.primary,
@@ -76,11 +87,25 @@ class JoinSwapButton(discord.ui.View):
             f"User {interaction.user.id} {interaction.user.display_name} clicked button to join swap"
         )
 
+        # shared function which is called to give role to user, regardless of whether or not
+        # they actually joined. this is so that they are notified next time, if they tried to join
+        async def _add_role() -> None:
+            logger.info(f"Giving user {interaction.user.id} {interaction.user.name} role")
+            # this has to be done in a server
+            assert interaction.guild is not None
+            assert isinstance(interaction.user, discord.Member)
+
+            # add the film role swap to the user
+            await interaction.user.add_roles(
+                discord.Object(self.swap_role_id), reason="User joined film swap"
+            )
+
         try:
             join_swap(interaction.user.id, interaction.user.display_name)
         except Exception as e:
             logger.exception(e, exc_info=True)
             await interaction.response.send_message(f"Error: {e}", ephemeral=True)
+            await _add_role()
             self.is_finished()
             return
 
@@ -92,6 +117,8 @@ class JoinSwapButton(discord.ui.View):
             "Joined swap. You can now submit a letter to tell your santa what you want",
             ephemeral=True,
         )
+
+        await _add_role()
 
         self.is_finished()
 
@@ -343,6 +370,7 @@ class Manage(discord.app_commands.Group):
 
             assert isinstance(channel, discord.TextChannel)
             view = JoinSwapButton()
+            view._bot = self.get_bot()  # type: ignore
             msg = await channel.send(
                 "Join the film swap by clicking the button below!",
                 view=view,

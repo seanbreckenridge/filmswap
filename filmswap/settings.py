@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     SQL_ECHO: bool = False
     GUILD_ID: int = -1
     ALLOWED_ROLES: list[str] = []
+    ROLE: str = "film-swap"
     ENVIRONMENT: str = Environment.DEVELOPMENT
     BACKUP_DIR: str = "backups"
 

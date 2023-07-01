@@ -88,7 +88,8 @@ def help_embed() -> discord.Embed:
 
 
 def create_bot() -> discord.Client:
-    intents = discord.Intents.default() | discord.Intents(reactions=True)
+    intents = discord.Intents.default()
+    intents.members = True
     bot = commands.Bot(command_prefix=commands.when_mentioned, intents=intents)
 
     async def error_if_not_in_dm(ctx: discord.Interaction | commands.Context) -> bool:  # type: ignore[type-arg]
@@ -266,14 +267,29 @@ def create_bot() -> discord.Client:
         letter = read_giftee_letter(interaction.user.id)
         await interaction.response.send_message(embed=letter, ephemeral=True)
 
-    @bot.tree.command(name="leave", description="Leave the swap")  # type: ignore[arg-type]
+    @bot.tree.command(name="leave", description="Leave the film swap")  # type: ignore[arg-type]
     async def leave(interaction: discord.Interaction) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used leave"
         )
 
-        if await error_if_not_in_dm(interaction):
+        # shared code to remove the role from the user, regardless of whether or not it succeeded
+        async def _remove_role() -> None:
+            assert isinstance(interaction.user, discord.Member)
+            filmswap_role_id = bot.filmswap_role_id()  # type: ignore
+            assert isinstance(filmswap_role_id, int)
+            logger.info(f"Removing role id {filmswap_role_id} from user {interaction.user.id}")
+            await interaction.user.remove_roles(
+            discord.Object(id=filmswap_role_id), reason="User tried to leave the film swap"
+        )
+
+        # if user uses this in dm, tell them to use it in the server instead
+        if interaction.guild is None:
+            await interaction.response.send_message(
+                "Please use this command in the server (e.g. in the bot-commands channel) instead of in DMs", ephemeral=True
+            )
             return
+
 
         if Swap.get_swap_period() != SwapPeriod.JOIN:
             logger.info(
@@ -283,11 +299,13 @@ def create_bot() -> discord.Client:
                 "Sorry, you can't leave the swap right now. Wait till the beginning of the next swap period to leave",
                 ephemeral=True,
             )
+            await _remove_role()
             return
 
         try:
             leave_swap(interaction.user.id)
         except RuntimeError as e:
+            await _remove_role()
             return await interaction.response.send_message(
                 f"Error: {e}", ephemeral=True
             )
@@ -296,6 +314,9 @@ def create_bot() -> discord.Client:
             "You have left the swap. You can rejoin by clicking the 'join button' in the swap channel",
             ephemeral=True,
         )
+
+        # remove film swap role from user
+        await _remove_role()
 
     @bot.tree.command(name="done-watching", description="Mark your gift as watched")  # type: ignore[arg-type]
     async def done_watching(interaction: discord.Interaction) -> None:
@@ -544,7 +565,9 @@ def create_bot() -> discord.Client:
             logger.info("No join button message ID found")
         else:
             logger.info(f"Found saved button message ID: {latest_swap_msg_id}")
-        bot.add_view(JoinSwapButton(), message_id=latest_swap_msg_id)
+        join_view = JoinSwapButton()
+        join_view._bot = bot  # type: ignore
+        bot.add_view(join_view, message_id=latest_swap_msg_id)
 
     @bot.event
     async def on_ready() -> None:
@@ -570,6 +593,25 @@ def create_bot() -> discord.Client:
             bot.tree.copy_global_to(guild=discord.Object(id=settings.GUILD_ID))
             await bot.tree.sync(guild=discord.Object(id=settings.GUILD_ID))
 
+        roles = await guild.fetch_roles()
+        filmswap_role = discord.utils.get(roles, name=settings.ROLE)
+
+        if filmswap_role is None:
+            logger.warning(
+                f"Could not find filmswap role, please create a role with the name '{settings.ROLE}'"
+            )
+        else:
+            logger.info(f"Found filmswap role: {filmswap_role}")
+
+        bot._filmswap_role = filmswap_role  # type: ignore
+
         await bot.tree.sync()
+
+    def filmswap_role_id() -> int:
+        rid = bot._filmswap_role.id  # type: ignore
+        assert rid is not None
+        return rid
+
+    bot.filmswap_role_id = filmswap_role_id  # type: ignore
 
     return bot
