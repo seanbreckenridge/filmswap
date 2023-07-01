@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+import typing as t
+from datetime import datetime, timedelta
+
+import click
+
+TEMPLATE = """You have until {} to join the swap and write/update your letter. After that the period for giving shows will begin.
+You will have until {} to select a show for your partner. The swap ends at {}."""
+
+
+def _parse_datetime(ctx: click.Context, param: click.Argument, value: str) -> datetime:
+    import dateparser
+    import warnings
+
+    # remove pytz warning from dateparser module
+    warnings.filterwarnings("ignore", "The localize method is no longer necessary")
+
+    ds = value.strip()
+    dt = dateparser.parse(ds)
+    if dt is None:
+        raise click.BadParameter(f"Could not parse '{ds}' into a date")
+    else:
+        return datetime.fromtimestamp(dt.timestamp())
+
+
+PERIOD_LENGTHS = timedelta(days=3)
+
+
+@click.command()
+@click.argument(
+    "JOIN_PHASE_START_DATE", type=click.UNPROCESSED, callback=_parse_datetime
+)
+def main(join_phase_start_date: datetime) -> None:
+    # add one month to the join phase start date to be end date
+
+    month = join_phase_start_date.month + 1
+    end_date = join_phase_start_date.replace(month=month)
+
+    # format dates into discord formatted epoch strings
+    swap_start_time = join_phase_start_date + PERIOD_LENGTHS
+    join_phase_end_date_str = f"<t:{int(swap_start_time.timestamp())}:f>"
+
+    swap_phase_end_date = swap_start_time + PERIOD_LENGTHS
+    swap_phase_end_date_str = f"<t:{int(swap_phase_end_date.timestamp())}:f>"
+
+    end_date_str = f"<t:{int(end_date.timestamp())}:f>"
+
+    # print message
+    print(
+        TEMPLATE.format(join_phase_end_date_str, swap_phase_end_date_str, end_date_str)
+    )
+
+
+if __name__ == "__main__":
+    main(prog_name="filmswap-message")
