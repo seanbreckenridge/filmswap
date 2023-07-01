@@ -118,7 +118,7 @@ class JoinSwapButton(discord.ui.View):
         )
 
         await interaction.response.send_message(
-            "Joined swap. Check your DMs to set your letter"
+            "Joined swap. Check your DMs to set your letter",
             ephemeral=True,
         )
 
