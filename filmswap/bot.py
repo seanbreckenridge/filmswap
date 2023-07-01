@@ -613,6 +613,7 @@ def create_bot() -> discord.Client:
     def filmswap_role_id() -> int:
         rid = bot._filmswap_role.id  # type: ignore
         assert rid is not None
+        assert isinstance(rid, int)
         return rid
 
     bot.filmswap_role_id = filmswap_role_id  # type: ignore
