@@ -114,11 +114,11 @@ class JoinSwapButton(discord.ui.View):
             return
 
         await interaction.user.send(
-            "You've joined the swap. You can now submit a >letter to tell your santa what you want"
+            "You've joined the swap. You can now submit a >letter, which should be a message which tells your santa what kinds of films you like/dislike, and can include your accounts on letterboxd/imdb if you have one."
         )
 
         await interaction.response.send_message(
-            "Joined swap. You can now submit a letter to tell your santa what you want",
+            "Joined swap. Check your DMs to set your letter"
             ephemeral=True,
         )
 
