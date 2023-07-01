@@ -29,6 +29,8 @@ from .db import (
     SwapUser,
 )
 
+DISABLE_UNMATCH = True
+
 
 def list_users() -> list[SwapUser]:
     with Session(engine) as session:  # type: ignore[attr-defined]
@@ -90,7 +92,9 @@ class JoinSwapButton(discord.ui.View):
         # shared function which is called to give role to user, regardless of whether or not
         # they actually joined. this is so that they are notified next time, if they tried to join
         async def _add_role() -> None:
-            logger.info(f"Giving user {interaction.user.id} {interaction.user.name} role")
+            logger.info(
+                f"Giving user {interaction.user.id} {interaction.user.name} role"
+            )
             # this has to be done in a server
             assert interaction.guild is not None
             assert isinstance(interaction.user, discord.Member)
@@ -312,6 +316,11 @@ class Manage(discord.app_commands.Group):
         """
         if await error_if_not_admin(interaction):
             return
+
+        if DISABLE_UNMATCH:
+            return await interaction.response.send_message(
+                "Unmatching users is disabled", ephemeral=True
+            )
 
         logger.info(f"Admin {interaction.user.id} unmatching users")
 

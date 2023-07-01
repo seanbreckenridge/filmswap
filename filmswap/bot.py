@@ -278,18 +278,21 @@ def create_bot() -> discord.Client:
             assert isinstance(interaction.user, discord.Member)
             filmswap_role_id = bot.filmswap_role_id()  # type: ignore
             assert isinstance(filmswap_role_id, int)
-            logger.info(f"Removing role id {filmswap_role_id} from user {interaction.user.id}")
+            logger.info(
+                f"Removing role id {filmswap_role_id} from user {interaction.user.id}"
+            )
             await interaction.user.remove_roles(
-            discord.Object(id=filmswap_role_id), reason="User tried to leave the film swap"
-        )
+                discord.Object(id=filmswap_role_id),
+                reason="User tried to leave the film swap",
+            )
 
         # if user uses this in dm, tell them to use it in the server instead
         if interaction.guild is None:
             await interaction.response.send_message(
-                "Please use this command in the server (e.g. in the bot-commands channel) instead of in DMs", ephemeral=True
+                "Please use this command in the server (e.g. in the bot-commands channel) instead of in DMs",
+                ephemeral=True,
             )
             return
-
 
         if Swap.get_swap_period() != SwapPeriod.JOIN:
             logger.info(
