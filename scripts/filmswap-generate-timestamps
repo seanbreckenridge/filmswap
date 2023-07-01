@@ -27,11 +27,16 @@ def _parse_datetime(ctx: click.Context, param: click.Argument, value: str) -> da
 PERIOD_LENGTHS = timedelta(days=3)
 
 
-@click.command()
+@click.group()
+def main() -> None:
+    pass
+
+
+@main.command()
 @click.argument(
     "JOIN_PHASE_START_DATE", type=click.UNPROCESSED, callback=_parse_datetime
 )
-def main(join_phase_start_date: datetime) -> None:
+def message(join_phase_start_date: datetime) -> None:
     # add one month to the join phase start date to be end date
 
     month = join_phase_start_date.month + 1
@@ -50,6 +55,12 @@ def main(join_phase_start_date: datetime) -> None:
     print(
         TEMPLATE.format(join_phase_end_date_str, swap_phase_end_date_str, end_date_str)
     )
+
+
+@main.command()
+@click.argument("DATE", type=click.UNPROCESSED, callback=_parse_datetime)
+def timestamp(date: datetime) -> None:
+    print(f"<t:{int(date.timestamp())}:f>")
 
 
 if __name__ == "__main__":
