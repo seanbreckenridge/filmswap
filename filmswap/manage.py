@@ -1,6 +1,8 @@
 from __future__ import annotations
 import io
 import os
+import calendar
+import datetime
 from pathlib import Path
 from typing import Literal
 
@@ -651,3 +653,83 @@ class Manage(discord.app_commands.Group):
         await interaction.response.send_message(
             f"Saved database backup to {latest.name}", ephemeral=True
         )
+
+    @discord.app_commands.command(  # type: ignore[arg-type]
+        name="create-final-thoughts-thread",
+        description="Create the final thoughts thread for this month",
+    )
+    async def create_final_thoughts_thread(
+        self, interaction: discord.Interaction, name: str
+    ) -> None:
+        logger.info(f"User {interaction.user.id} creating final thoughts thread")
+
+        if await error_if_not_admin(interaction):
+            return
+
+        bot = self.get_bot()
+        swap_info = Swap.get_swap()
+        if swap_info.swap_channel_discord_id is None:
+            logger.info("No channel set for swap")
+            await interaction.response.send_message(
+                "Error: No channel set for swap", ephemeral=True
+            )
+            return
+        channel = await bot.fetch_channel(swap_info.swap_channel_discord_id)
+        assert isinstance(channel, discord.TextChannel)
+
+        # check if we're creating a duplicate thread
+        for thread in channel.threads:
+            if thread.name == name:
+                logger.info(f"Thread {name} already exists")
+                await interaction.response.send_message(
+                    f"Error: Thread {name} already exists", ephemeral=True
+                )
+                return
+
+        # send message that starts thread
+        msg = await channel.send(
+            f"Created thread: {name}. Post your thoughts for this month in this thread!"
+        )
+        thread = await channel.create_thread(
+            name=name,
+            auto_archive_duration=10080,
+            type=discord.ChannelType.public_thread,
+            message=msg,
+        )
+
+        logger.info(f"Created thread {name}")
+
+        await interaction.response.send_message(
+            f"Created thread {name}", ephemeral=True
+        )
+
+    # autocomplete names of the final thoughts thread
+    @create_final_thoughts_thread.autocomplete("name")
+    async def _autocomplete_thread_name(
+        self, interaction: discord.Interaction, current: str
+    ) -> list[discord.app_commands.Choice[str]]:
+        # this should be a name like:
+        # Final Thoughts (June 2023)
+        # Final Thoughts (June-July 2023)
+
+        today = datetime.date.today()
+        month = today.month
+        year = today.year
+
+        # wrap around december to january
+        next_month = month + 1
+        if next_month == 13:
+            next_month = 1
+            year += 1
+
+        month_str = calendar.month_name[month]
+        next_month_str = calendar.month_name[next_month]
+
+        choices: list[str] = [
+            f"Final Thoughts ({month_str}-{next_month_str} {year})",
+            f"Final Thoughts ({month_str} {year})",
+        ]
+
+        return [
+            discord.app_commands.Choice(name=choice, value=choice) for choice in choices
+        ]
