@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     ROLE: str = "film-swap"
     ENVIRONMENT: str = Environment.DEVELOPMENT
     BACKUP_DIR: str = "backups"
+    BOT_NAME: str = "FilmSwap"
 
     class Config:
         case_sensitive = False

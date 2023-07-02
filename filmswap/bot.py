@@ -608,6 +608,10 @@ def create_bot() -> discord.Client:
 
         bot._filmswap_role = filmswap_role  # type: ignore
 
+        # change bot username on boot up
+        assert bot.user is not None, "Bot user is None while booting up!"
+        await bot.user.edit(username=settings.BOT_NAME)
+
         await bot.tree.sync()
 
     def filmswap_role_id() -> int:
