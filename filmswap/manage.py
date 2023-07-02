@@ -94,6 +94,8 @@ class JoinSwapButton(discord.ui.View):
         # shared function which is called to give role to user, regardless of whether or not
         # they actually joined. this is so that they are notified next time, if they tried to join
         async def _add_role() -> None:
+            if not settings.MODIFY_ROLES:
+                return
             logger.info(
                 f"Giving user {interaction.user.id} {interaction.user.name} role"
             )

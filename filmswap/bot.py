@@ -275,6 +275,8 @@ def create_bot() -> discord.Client:
 
         # shared code to remove the role from the user, regardless of whether or not it succeeded
         async def _remove_role() -> None:
+            if not settings.MODIFY_ROLES:
+                return
             assert isinstance(interaction.user, discord.Member)
             filmswap_role_id = bot.filmswap_role_id()  # type: ignore
             assert isinstance(filmswap_role_id, int)
