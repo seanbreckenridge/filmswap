@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 
 import click
 
-TEMPLATE = """You have until {} to join the swap and write/update your letter. After that the period for giving shows will begin.
-You will have until {} to select a show for your partner. The swap ends at {}."""
+TEMPLATE = """You have until {} to join the swap and write/update your letter. After that the period for giving films will begin.
+You will have until {} to select a film for your partner, and then until {} to watch your gifted film and write your thoughts"""
 
 
 def _parse_datetime(ctx: click.Context, param: click.Argument, value: str) -> datetime:
