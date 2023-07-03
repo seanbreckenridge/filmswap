@@ -46,22 +46,22 @@ def havent_set_letter() -> list[SwapUser]:
 
 def havent_submitted_gift() -> list[SwapUser]:
     with Session(engine) as session:  # type: ignore[attr-defined]
-        return session.query(SwapUser).filter_by(gift=None).all()  # type: ignore[no-any-return]
+        return session.query(SwapUser).filter_by(gift=None).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return]
 
 
 def users_without_giftees() -> list[SwapUser]:
     with Session(engine) as session:  # type: ignore[attr-defined]
-        return session.query(SwapUser).filter_by(giftee_id=None).all()  # type: ignore[no-any-return]
+        return session.query(SwapUser).filter_by(giftee_id=None).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return]
 
 
 def users_without_santas() -> list[SwapUser]:
     with Session(engine) as session:  # type: ignore[attr-defined]
-        return session.query(SwapUser).filter_by(santa_id=None).all()  # type: ignore[no-any-return]
+        return session.query(SwapUser).filter_by(santa_id=None).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return]
 
 
 def users_not_done_watching() -> list[SwapUser]:
     with Session(engine) as session:  # type: ignore[attr-defined]
-        return session.query(SwapUser).filter_by(done_watching=False).all()  # type: ignore[no-any-return]
+        return session.query(SwapUser).filter_by(done_watching=False).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return]
 
 
 class JoinSwapButton(discord.ui.View):
@@ -533,8 +533,6 @@ class Manage(discord.app_commands.Group):
         assert isinstance(channel, discord.TextChannel) or channel is None
         embed.add_field(name="Channel", value=channel.mention if channel else "None")
 
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
         all_users = list_users()
         no_letters = havent_set_letter()
         havent_submitted = havent_submitted_gift()
@@ -542,6 +540,19 @@ class Manage(discord.app_commands.Group):
         dont_have_santas = users_without_santas()
         not_done_watching = users_not_done_watching()
         banned = Banned.list_banned()
+
+        embed.add_field(name="Users in Swap", value=f"{len(all_users)}")
+        embed.add_field(name="Users without letters", value=f"{len(no_letters)}")
+        embed.add_field(
+            name="Users (with letters) without gifts",
+            value=f"{len(havent_submitted)}",
+        )
+        embed.add_field(
+            name="Users (with letters) not done watching",
+            value=f"{len(not_done_watching)}",
+        )
+
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
         report = f"""**{len(all_users)}** users are in the swap
 
@@ -551,19 +562,19 @@ class Manage(discord.app_commands.Group):
 
 {os.linesep.join(f'{user.user_id} {user.name}' for user in no_letters)}
 
-**{len(havent_submitted)}** users have not submitted gifts
+**{len(havent_submitted)}** users [who have letters] have not submitted gifts
 
 {os.linesep.join(f'{user.user_id} {user.name}' for user in havent_submitted)}
 
-**{len(not_done_watching)}** users have not set /done-watching
+**{len(not_done_watching)}** users [who have letters] have not set /done-watching
 
 {os.linesep.join(f'{user.user_id} {user.name}' for user in not_done_watching)}
 
-**{len(dont_have_parters)}** users do not have giftees
+**{len(dont_have_parters)}** users [who have letters] do not have giftees
 
 {os.linesep.join(f'{user.user_id} {user.name}' for user in dont_have_parters)}
 
-**{len(dont_have_santas)}** users do not have santas
+**{len(dont_have_santas)}** users [who have letters] do not have santas
 
 {os.linesep.join(f'{user.user_id} {user.name}' for user in dont_have_santas)}
 

@@ -453,7 +453,6 @@ def create_bot() -> discord.Client:
 
             logger.info(f"User {message.author.id} setting gift to {gift_contents}")
 
-
             try:
                 set_gift(message.author.id, gift_contents)
             except AssertionError:
