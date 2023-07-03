@@ -234,7 +234,11 @@ class Manage(discord.app_commands.Group):
                         )
                         continue
                     try:
-                        gift_embed = receive_gift_embed(user.user_id)
+                        try:
+                            gift_embed = receive_gift_embed(user.user_id, raise_if_missing=True)
+                        except RuntimeError as e:
+                            logger.info(f"Error receiving gift for {user.user_id}: {e}")
+                            continue
 
                         user_dm = await self.get_bot().fetch_user(user.user_id)
                         await user_dm.send(embed=gift_embed)

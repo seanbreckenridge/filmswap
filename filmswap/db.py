@@ -415,7 +415,7 @@ def review_my_letter_embed(user_id: int) -> discord.Embed:
                 description="Use the `>letter` command to send your letter",
             )
 
-    let = f"""Dear Santa,\n{swapuser.letter}\nLove, {swapuser.name}"""
+    let = f"""Dear Santa,\n\n{swapuser.letter}\n\nLove, {swapuser.name}"""
     embed = discord.Embed(title="Your received a letter!", description=let)
     return embed
 
@@ -445,12 +445,12 @@ def review_my_gift_embed(user_id: int) -> discord.Embed:
                 description="You'll have to wait for the swap to start",
             )
 
-        gift = f"""Dear {given_to.name}\n{swapuser.gift}\nLove, Santa"""
+        gift = f"""Dear {given_to.name}\n\n{swapuser.gift}\n\nLove, Santa"""
         embed = discord.Embed(title="Your received a gift!", description=gift)
         return embed
 
 
-def receive_gift_embed(user_id: int) -> discord.Embed:
+def receive_gift_embed(user_id: int, raise_if_missing: bool = False) -> discord.Embed:
     """
     This is how a user receives their gift, to see what their santa recommended them
     """
@@ -461,6 +461,10 @@ def receive_gift_embed(user_id: int) -> discord.Embed:
             logger.info(
                 f"User {user_id} tried to receive their gift, but they haven't been assigned a santa yet"
             )
+            if raise_if_missing:
+                raise RuntimeError(
+                    "User tried to receive their gift, but they haven't been assigned a santa yet"
+                )
             return discord.Embed(
                 title="You don't have a santa yet!",
                 description="If you joined late, you may get assigned one soon, or you'll have to wait for the next swap to start",
@@ -490,6 +494,10 @@ def receive_gift_embed(user_id: int) -> discord.Embed:
             logger.info(
                 f"User {user_id} tried to receive their gift, but their santa {santa_user.user_id} {santa_user.name} hasn't set it yet"
             )
+            if raise_if_missing:
+                raise RuntimeError(
+                    "User tried to receive their gift, but their santa hasn't set it yet"
+                )
             return discord.Embed(
                 title="You haven't received a gift yet!",
                 description="Please wait for your santa to send their gift. If the 'watch' period has already started, you can ask the mods to make sure your santa sent their gift",
@@ -497,7 +505,7 @@ def receive_gift_embed(user_id: int) -> discord.Embed:
 
         my_swapuser = session.query(SwapUser).filter_by(user_id=user_id).one()
 
-        gift = f"""Dear {my_swapuser.name}\n{santa_user.gift}\nLove, Santa"""
+        gift = f"""Dear {my_swapuser.name}\n\n{santa_user.gift}\n\nLove, Santa"""
 
         embed = discord.Embed(title="Your received a gift!", description=gift)
         return embed
@@ -542,7 +550,7 @@ def read_giftee_letter(user_id: int) -> discord.Embed:
             case _:
                 pass
 
-        let = f"""Dear Santa,\n{giftee_user.letter}\nLove, {giftee_user.name}"""
+        let = f"""Dear Santa,\n\n{giftee_user.letter}\n\nLove, {giftee_user.name}"""
         embed = discord.Embed(title="Your giftee sent a letter!", description=let)
         return embed
 
