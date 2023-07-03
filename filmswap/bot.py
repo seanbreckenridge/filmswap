@@ -493,6 +493,15 @@ def create_bot() -> discord.Client:
                 )
                 return
 
+            if len(message_contents) > 1900:
+                logger.info(
+                    f"User {message.author.id} tried to send message to santa but their message was too long"
+                )
+                await message.author.send(
+                    f"Sorry, your message is too long. It must be less than 1900 characters (it is currently {len(message_contents)} characters)"
+                )
+                return
+
             assert santa is not None
 
             try:
@@ -543,6 +552,15 @@ def create_bot() -> discord.Client:
                 )
                 await message.author.send(
                     "Use >write-giftee [text] to send a message to your giftee, where [text] is your message"
+                )
+                return
+
+            if len(message_contents) > 1900:
+                logger.info(
+                    f"User {message.author.id} tried to send message to giftee but their message was too long"
+                )
+                await message.author.send(
+                    f"Sorry, your message is too long. It must be less than 1900 characters (it is currently {len(message_contents)} characters)"
                 )
                 return
 
