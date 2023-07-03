@@ -235,7 +235,9 @@ class Manage(discord.app_commands.Group):
                         continue
                     try:
                         try:
-                            gift_embed = receive_gift_embed(user.user_id, raise_if_missing=True)
+                            gift_embed = receive_gift_embed(
+                                user.user_id, raise_if_missing=True
+                            )
                         except RuntimeError as e:
                             logger.info(f"Error receiving gift for {user.user_id}: {e}")
                             continue
