@@ -315,10 +315,14 @@ def join_swap(user_id: int, name: str) -> None:
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one_or_none()
         if swap_user is not None:
             logger.info(f"User {user_id} already in swap, updating name to {name}")
+            username_changed = swap_user.name != name
             swap_user.name = name
-            raise RuntimeError(
-                f"You are already in the swap, updated username to {name}"
-            )
+            if username_changed:
+                raise RuntimeError(
+                    f"You are already in the swap, updated username to {name}"
+                )
+            else:
+                raise RuntimeError("You are already in the swap")
         else:
             logger.info(f"User {user_id} joined swap with name {name}")
             swap_user = SwapUser(user_id=user_id, name=name)
