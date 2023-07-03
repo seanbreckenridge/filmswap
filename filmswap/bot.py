@@ -402,7 +402,13 @@ def create_bot() -> discord.Client:
 
             logger.info(f"User {message.author.id} setting letter to {letter_contents}")
 
-            set_letter(message.author.id, letter_contents)
+            try:
+                set_letter(message.author.id, letter_contents)
+            except AssertionError:
+                await message.author.send(
+                    f"Sorry, your letter is too long. It must be less than 1900 characters (it is currently {len(letter_contents)} characters)"
+                )
+                return
             await message.reply("Your letter has been set, your santa will see:")
             await message.reply(embed=review_my_letter_embed(message.author.id))
         elif content.startswith(">submit"):
@@ -447,7 +453,14 @@ def create_bot() -> discord.Client:
 
             logger.info(f"User {message.author.id} setting gift to {gift_contents}")
 
-            set_gift(message.author.id, gift_contents)
+
+            try:
+                set_gift(message.author.id, gift_contents)
+            except AssertionError:
+                await message.author.send(
+                    f"Sorry, your gift is too long. It must be less than 1900 characters (it is currently {len(gift_contents)} characters)"
+                )
+                return
             await message.reply("Your gift has been sent, your giftee will see:")
             await message.reply(embed=review_my_gift_embed(message.author.id))
 
