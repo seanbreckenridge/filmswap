@@ -460,9 +460,13 @@ def create_bot() -> discord.Client:
                     f"Sorry, your gift is too long. It must be less than 1900 characters (it is currently {len(gift_contents)} characters)"
                 )
                 return
-            await message.reply("Your gift has been set, when the watch period starts your giftee will see:")
+            await message.reply(
+                "Your gift has been set, when the watch period starts your giftee will see:"
+            )
             await message.reply(embed=review_my_gift_embed(message.author.id))
-            await message.reply("If you're confident in your gift, you can also use >write-giftee to send it to your giftee early")
+            await message.reply(
+                "If you're confident in your gift, you can also use >write-giftee to send it to your giftee early"
+            )
 
         elif content.startswith(">write-santa"):
             logger.info(f"User {message.author.id} sending message to santa")
