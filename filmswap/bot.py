@@ -629,6 +629,7 @@ def create_bot() -> discord.Client:
     @bot.event
     async def on_ready() -> None:
         logger.info(f"Logged in as {bot.user}")
+        logger.info(f"Period post hook is {'enabled' if settings.PERIOD_POST_HOOK else 'disabled'}")
         if settings.GUILD_ID == -1:
             logger.warning("No guild ID specified, cannot register commands")
             return
