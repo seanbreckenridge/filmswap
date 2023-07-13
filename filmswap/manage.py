@@ -633,13 +633,18 @@ class Manage(discord.app_commands.Group):
         embed.add_field(name="Users in Swap", value=f"{len(all_users)}")
         embed.add_field(name="Users without letters", value=f"{len(no_letters)}")
         embed.add_field(
-            name="Users (with letters) without gifts",
+            name="Active users (have letters)",
+            value=f"{len(all_users) - len(no_letters)}",
+        )
+        embed.add_field(
+            name="Active users without gifts",
             value=f"{len(havent_submitted)}",
         )
         embed.add_field(
-            name="Users (with letters) not done watching",
+            name="Active users not done watching",
             value=f"{len(not_done_watching)}",
         )
+        embed.add_field(name="Banned users", value=f"{len(banned)}")
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
