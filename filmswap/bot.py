@@ -18,6 +18,7 @@ from .db import (
     read_giftee_letter,
     set_gift,
     user_has_letter,
+    has_set_gift,
     set_gift_done,
     set_letter,
     leave_swap,
@@ -418,19 +419,6 @@ def create_bot() -> discord.Client:
                 await message.author.send(error)
                 return
 
-            # check if they've already submitted a gift this swap
-            # we should not allow people who have already submitted to change during the swap period,
-            # but if they haven't submitted yet, they can submit at any time (to allow latecomers to join later)
-            if Swap.get_swap_period() != SwapPeriod.SWAP:
-                logger.info(
-                    f"User {message.author.id} tried to set gift but it's not the SWAP period"
-                )
-                # already has gift, check if they are allowed to change it right now
-                await message.author.send(
-                    "Sorry, you can't change your gift right now. Wait till the next 'swap' period to set your gift",
-                )
-                return
-
             if not has_giftee(message.author.id):
                 logger.info(
                     f"User {message.author.id} tried to set gift but they don't have a giftee"
@@ -440,6 +428,35 @@ def create_bot() -> discord.Client:
                 )
                 return
 
+            current_period = Swap.get_swap_period()
+            if current_period == SwapPeriod.JOIN:
+                logger.info(
+                    f"User {message.author.id} tried to set gift but its currently JOIN period"
+                )
+                # already has gift, check if they are allowed to change it right now
+                await message.author.send(
+                    "Sorry, you can't change your gift right now. Wait till the next 'swap' period starts to set your gift",
+                )
+                return
+
+            assert (
+                current_period == SwapPeriod.SWAP or current_period == SwapPeriod.WATCH
+            )
+            # check if they've already submitted a gift this swap
+            # we should not allow people who have already submitted to change during the swap period,
+            # but if they haven't submitted yet, they can submit at any time (to allow latecomers to join later)
+            if current_period == SwapPeriod.WATCH and has_set_gift(message.author.id):
+                logger.info(
+                    f"User {message.author.id} tried to set gift but the WATCH period has already started, and they've already set a gift"
+                )
+                # already has gift, check if they are allowed to change it right now
+                await message.author.send(
+                    "Sorry, you can't change your gift right now. If you need to communicate with your giftee, you can use >write-giftee to send them a message",
+                )
+                return
+
+            # this is only possible if its the swap period, or if its the watch period and they haven't set a gift yet
+            # that couldve happened if a user was banned, or they forgot to set it but >write-giftee'd their giftee
             gift_contents = content[len(">submit") :].strip()
 
             if not gift_contents:

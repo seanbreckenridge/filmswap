@@ -1,4 +1,5 @@
 from __future__ import annotations
+import asyncio
 import io
 import os
 import calendar
@@ -21,6 +22,8 @@ from .db import (
     SwapPeriod,
     Swap,
     Banned,
+    get_santa,
+    get_giftee,
     read_giftee_letter,
     receive_gift_embed,
     ban_user,
@@ -167,6 +170,94 @@ async def error_if_not_admin(interaction: discord.Interaction) -> bool:
     return False
 
 
+async def _fix_connections_after_ban_or_leave(user_id: int, bot: commands.Bot) -> None:
+    # if the user is banned, we need to remove them from the swap
+    # but this also means that if they had a santa/giftee, we need to fix the
+    # dangling connections
+    #
+    # A -> B -> C
+    # say A was gifting to B, and B was gifting to C
+    #
+    # if we ban B, we need to make A gift to C instead
+    #
+    # then, we should send a message to A saying that their giftee was banned, and they
+    # should run /read again to gift to their new giftee
+    #
+    # similarly, we should send a message to C saying that their santa was banned, and they
+    # should recieve their gift shortly (it might be after the watch period starts, but hopefully soon)
+
+    santa = get_santa(user_id)
+    giftee = get_giftee(user_id)
+
+    if santa is None or giftee is None:
+        raise RuntimeError(
+            f"WARNING: while banning user {user_id}, they did not have both a santa and giftee, so did not fix/reroute any dangling connections.\n\nIf its currently the JOIN phase, this is fine, but if its the SWAP/WATCH phase, something may have broken and a user might be assigned a banned user as their giftee/santa"
+        )
+
+    logger.info(f"Banned users' santa was {santa.user_id} {santa.name}")
+    logger.info(f"Banned users' giftee was {giftee.user_id} {giftee.name}")
+
+    assert isinstance(santa.user_id, int)
+    assert isinstance(giftee.user_id, int)
+
+    with Session(engine) as session:  # type: ignore[attr-defined]
+        banned_user_santa = (
+            session.query(SwapUser).filter(SwapUser.user_id == santa.user_id).one()
+        )
+
+        banned_user_giftee = (
+            session.query(SwapUser).filter(SwapUser.user_id == giftee.user_id).one()
+        )
+
+        # update the santas giftee to be the banned users user id
+        # so, now A -> C giftee, and B is no longer in the swap
+        banned_user_santa.giftee_id = banned_user_giftee.user_id
+        logger.info(
+            f"User {banned_user_santa.user_id} {banned_user_santa.name} is now gifting to {banned_user_giftee.user_id} {banned_user_giftee.name}"
+        )
+
+        # update the giftees santa to be the banned users santa
+        # so, now C -> A santa, and B is no longer in the swap
+        banned_user_giftee.santa_id = banned_user_santa.user_id
+        logger.info(
+            f"User {banned_user_giftee.user_id} {banned_user_giftee.name} is now being gifted by {banned_user_santa.user_id} {banned_user_santa.name}"
+        )
+
+        # we should remove the santa's gift, since they are no longer gifting to the same person
+        logger.info(
+            f"Removing santa {banned_user_santa.user_id} {banned_user_santa.name}'s gift"
+        )
+        banned_user_santa.gift = None
+
+        session.add(banned_user_santa)
+        session.add(banned_user_giftee)
+
+        session.commit()
+
+    # we should confirm that the banned user ID appears *nowhere* in the swap
+    # if it does, then we have a bug
+    for user in list_users():
+        assert user.user_id != user_id, f"User {user_id} still appears in the swap"
+        assert user.santa_id != user_id, f"User {user_id} still appears as a santa"
+        assert user.giftee_id != user_id, f"User {user_id} still appears as a giftee"
+
+    # send message to new santa saying that their giftee was banned
+    # and they should run /read again to gift to their new giftee
+
+    santa_discord_user = await bot.fetch_user(santa.user_id)
+    await asyncio.sleep(1)
+    giftee_discord_user = await bot.fetch_user(giftee.user_id)
+    await asyncio.sleep(1)
+
+    await santa_discord_user.send(
+        "Your giftee was banned from the swap. You have been assigned a new giftee. Please run /read again to read their letter, and send them a gift.\nIf youre not able to set a gift, you can use >write-giftee to send a message to them instead"
+    )
+    await asyncio.sleep(1)
+    await giftee_discord_user.send(
+        "Your santa was banned from the swap. You will recieve your gift shortly, but it might be after the watch period starts. If you don't have it soon, feel free to mention it in the channel"
+    )
+
+
 # create group to manage swaps
 class Manage(discord.app_commands.Group):
     def get_bot(self) -> commands.Bot:
@@ -218,6 +309,7 @@ class Manage(discord.app_commands.Group):
 
                         user_dm = await self.get_bot().fetch_user(user.user_id)
                         await user_dm.send(embed=letter_embed)
+                        await asyncio.sleep(1)
                     except Exception as e:
                         logger.exception(
                             f"Error sending letter to user {user.user_id}: {e}",
@@ -244,6 +336,7 @@ class Manage(discord.app_commands.Group):
 
                         user_dm = await self.get_bot().fetch_user(user.user_id)
                         await user_dm.send(embed=gift_embed)
+                        await asyncio.sleep(1)
                     except Exception as e:
                         logger.exception(
                             f"Error sending gift to user {user.user_id}: {e}",
@@ -284,7 +377,11 @@ class Manage(discord.app_commands.Group):
             msg += f"\n{additional_message}"
 
         await interaction.response.send_message(msg, ephemeral=True)
-        await self._set_period_post_hook(interaction, new_period)
+        if settings.PERIOD_POST_HOOK:
+            logger.info("Running period post hook")
+            await self._set_period_post_hook(interaction, new_period)
+        else:
+            logger.info("Skipping period post hook")
 
     @set_period.autocomplete("period")
     async def set_period_autocomplete_period(
@@ -426,13 +523,6 @@ class Manage(discord.app_commands.Group):
             )
             return
 
-        if Swap.get_swap_period() != SwapPeriod.JOIN:
-            logger.info("Can only ban users during the join period")
-            await interaction.response.send_message(
-                "Error: Can only ban users during the join period", ephemeral=True
-            )
-            return
-
         assert interaction.guild is not None
 
         try:
@@ -445,6 +535,13 @@ class Manage(discord.app_commands.Group):
         await interaction.response.send_message(
             f"Banned {user_id} from the swap", ephemeral=True
         )
+
+        try:
+            await _fix_connections_after_ban_or_leave(user_id, self.get_bot())
+        except (RuntimeError, AssertionError) as e:
+            logger.exception(e, exc_info=True)
+            await interaction.response.send_message(f"Error: {e}", ephemeral=True)
+            return
 
     @discord.app_commands.command(  # type: ignore[arg-type]
         name="filmswap-unban", description="Unban a user from the swap"
@@ -462,14 +559,6 @@ class Manage(discord.app_commands.Group):
         except ValueError:
             await interaction.response.send_message(
                 f"Error: {discord_user_id} is not an integer", ephemeral=True
-            )
-            return
-
-        if Swap.get_swap_period() != SwapPeriod.JOIN:
-            logger.info("Can only unban users during the join period")
-            await interaction.response.send_message(
-                "Error: Can only unban users during the join period",
-                ephemeral=True,
             )
             return
 

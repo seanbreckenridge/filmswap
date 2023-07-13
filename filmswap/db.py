@@ -378,6 +378,16 @@ def get_giftee(user_id: int) -> SwapUser | None:
         return session.query(SwapUser).filter_by(santa_id=user_id).one_or_none()  # type: ignore[no-any-return]
 
 
+def has_set_gift(user_id: int) -> bool:
+    with Session(engine) as session:  # type: ignore[attr-defined]
+        swap_user = session.query(SwapUser).filter_by(user_id=user_id).one()
+        if swap_user.gift is None:
+            return False
+        if swap_user.gift.strip() == "":
+            return False
+        return True
+
+
 def set_gift(user_id: int, gift: str) -> None:
     """
     This is how a user sets their gift, to tell their giftee what they're giving them

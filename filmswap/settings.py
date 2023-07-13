@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     BACKUP_DIR: str = "backups"
     BOT_NAME: str = "FilmSwap"
     MODIFY_ROLES: bool = False
+    PERIOD_POST_HOOK: bool = True
 
     class Config:
         case_sensitive = False
