@@ -333,12 +333,12 @@ def create_bot() -> discord.Client:
         if await error_if_not_in_dm(interaction):
             return
 
-        if Swap.get_swap_period() != SwapPeriod.WATCH:
+        if Swap.get_swap_period() == SwapPeriod.JOIN:
             logger.info(
-                f"User {interaction.user.id} {interaction.user.display_name} tried to mark their gift as watched but it's not the WATCH period"
+                f"User {interaction.user.id} {interaction.user.display_name} tried to mark their gift as watched during the JOIN period"
             )
             await interaction.response.send_message(
-                "Can't set your gift as watched till the watch period starts",
+                "Can't set your gift as watched right now. Wait till the swap begins",
                 ephemeral=True,
             )
             return
@@ -629,7 +629,9 @@ def create_bot() -> discord.Client:
     @bot.event
     async def on_ready() -> None:
         logger.info(f"Logged in as {bot.user}")
-        logger.info(f"Period post hook is {'enabled' if settings.PERIOD_POST_HOOK else 'disabled'}")
+        logger.info(
+            f"Period post hook is {'enabled' if settings.PERIOD_POST_HOOK else 'disabled'}"
+        )
         if settings.GUILD_ID == -1:
             logger.warning("No guild ID specified, cannot register commands")
             return
