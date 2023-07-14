@@ -723,6 +723,11 @@ class Manage(discord.app_commands.Group):
             )
             return
 
+
+        await interaction.response.send_message(
+            f"Sending reveal to {interaction.user.display_name}", ephemeral=True
+        )
+
         id_to_names: dict[int, str] = {
             user.user_id: user.name for user in users_with_both
         }
@@ -768,10 +773,6 @@ class Manage(discord.app_commands.Group):
                     plt.savefig(f, pad_inches=0.1, transparent=False, bbox_inches="tight")
                     f.seek(0)
                     await user_obj.send(file=discord.File(f, "reveal.png"))
-
-        await interaction.response.send_message(
-            f"Sent reveal to {interaction.user.display_name}", ephemeral=True
-        )
 
     @discord.app_commands.command(  # type: ignore[arg-type]
         name="backup-db", description="Backup the database"
