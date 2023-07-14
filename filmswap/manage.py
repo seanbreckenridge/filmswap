@@ -702,7 +702,10 @@ class Manage(discord.app_commands.Group):
         name="reveal", description="Reveal the connections between giftee/santas"
     )
     async def reveal(
-        self, interaction: discord.Interaction, format: Literal["text", "graph"]
+        self,
+        interaction: discord.Interaction,
+        format: Literal["text", "graph"],
+        count: int = 1,
     ) -> None:
         logger.info(f"User {interaction.user.id} revealing connections -- {format}")
 
@@ -738,32 +741,33 @@ class Manage(discord.app_commands.Group):
                 await interaction.user.send(file=discord.File(f, "report.txt"))
 
         else:
-            graph = nx.DiGraph()
-            plt.clf()
-            for user in users_with_both:
-                assert user.giftee_id is not None
-                graph.add_edge(
-                    filter_emoji(user.name),
-                    filter_emoji(id_to_names[user.giftee_id]),
-                    color="red",
-                )
+            for _ in range(count):
+                graph = nx.DiGraph()
+                plt.clf()
+                for user in users_with_both:
+                    assert user.giftee_id is not None
+                    graph.add_edge(
+                        filter_emoji(user.name),
+                        filter_emoji(id_to_names[user.giftee_id]),
+                        color="red",
+                    )
 
-            options = {
-                "node_color": "blue",
-                "node_size": 1,
-                "edge_color": "grey",
-                "font_size": 8,
-                "width": 3,
-                "arrowstyle": "-|>",
-                "arrowsize": 12,
-            }
+                options = {
+                    "node_color": "blue",
+                    "node_size": 1,
+                    "edge_color": "grey",
+                    "font_size": 8,
+                    "width": 3,
+                    "arrowstyle": "-|>",
+                    "arrowsize": 12,
+                }
 
-            nx.draw_networkx(graph, arrows=True, **options)
-            plt.box(False)
-            with io.BytesIO() as f:
-                plt.savefig(f, pad_inches=0.1, transparent=False, bbox_inches="tight")
-                f.seek(0)
-                await user_obj.send(file=discord.File(f, "reveal.png"))
+                nx.draw_networkx(graph, arrows=True, **options)
+                plt.box(False)
+                with io.BytesIO() as f:
+                    plt.savefig(f, pad_inches=0.1, transparent=False, bbox_inches="tight")
+                    f.seek(0)
+                    await user_obj.send(file=discord.File(f, "reveal.png"))
 
         await interaction.response.send_message(
             f"Sent reveal to {interaction.user.display_name}", ephemeral=True
