@@ -459,7 +459,7 @@ def review_my_gift_embed(user_id: int) -> discord.Embed:
                 description="You'll have to wait for the swap to start",
             )
 
-        gift = f"""Dear {given_to.name}\n\n{swapuser.gift}\n\nLove, Santa"""
+        gift = f"""Dear {given_to.name},\n\n{swapuser.gift}\n\nLove, Santa"""
         embed = discord.Embed(title="Your received a gift!", description=gift)
         return embed
 
@@ -519,7 +519,7 @@ def receive_gift_embed(user_id: int, raise_if_missing: bool = False) -> discord.
 
         my_swapuser = session.query(SwapUser).filter_by(user_id=user_id).one()
 
-        gift = f"""Dear {my_swapuser.name}\n\n{santa_user.gift}\n\nLove, Santa"""
+        gift = f"""Dear {my_swapuser.name},\n\n{santa_user.gift}\n\nLove, Santa"""
 
         embed = discord.Embed(title="Your received a gift!", description=gift)
         return embed
