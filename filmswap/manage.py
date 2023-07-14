@@ -131,7 +131,9 @@ class JoinSwapButton(discord.ui.View):
             join_swap(interaction.user.id, interaction.user.display_name)
         except Exception as e:
             logger.exception(e, exc_info=True)
-            await interaction.response.send_message(f"Error: {e}", ephemeral=True)
+            await interaction.response.send_message(str(e), ephemeral=True)
+            # send as a DM as well, ephemeral messages are easy to miss
+            await interaction.user.send(str(e))
             await _add_role()
             self.is_finished()
             return
@@ -408,6 +410,47 @@ class Manage(discord.app_commands.Group):
             for period in SwapPeriod.__members__
             if period.lower().startswith(current.lower())
         ]
+
+    @discord.app_commands.command(  # type: ignore[arg-type]
+        name="update-usernames",
+        description="Update all usernames to match their current discord username",
+    )
+    async def update_usernames(self, interaction: discord.Interaction) -> None:
+        if await error_if_not_admin(interaction):
+            return
+
+        logger.info(f"Admin {interaction.user.id} updating usernames")
+
+        bot = self.get_bot()
+
+        guild = bot.get_guild(settings.GUILD_ID)
+        assert guild is not None
+
+        await interaction.response.send_message(
+            "Updating usernames, this may take a few seconds...", ephemeral=True
+        )
+
+        with Session(engine) as session:  # type: ignore[attr-defined]
+            users = session.query(SwapUser).all()
+            for user in users:
+                try:
+                    member = await guild.fetch_member(user.user_id)
+                except discord.NotFound:
+                    logger.info(
+                        f"Could not find member {user.user_id} {user.name}, skipping"
+                    )
+                    continue
+
+                if member.display_name != user.name:
+                    logger.info(
+                        f"Updating {user.user_id} {user.name} to {member.display_name}"
+                    )
+                user.name = member.display_name
+                session.add(user)
+
+                await asyncio.sleep(0.5)
+
+            session.commit()
 
     @discord.app_commands.command(  # type: ignore[arg-type]
         name="match-users",
@@ -723,7 +766,6 @@ class Manage(discord.app_commands.Group):
             )
             return
 
-
         await interaction.response.send_message(
             f"Sending reveal to {interaction.user.display_name}", ephemeral=True
         )
@@ -760,17 +802,20 @@ class Manage(discord.app_commands.Group):
                 options = {
                     "node_color": "blue",
                     "node_size": 1,
-                    "edge_color": "grey",
-                    "font_size": 8,
+                    "edge_color": "#a9a9a9",
                     "width": 3,
                     "arrowstyle": "-|>",
-                    "arrowsize": 12,
+                    "arrowsize": 13,
+                    "font_size": 8,
+                    "font_color": "black",
                 }
 
                 nx.draw_networkx(graph, arrows=True, **options)
                 plt.box(False)
                 with io.BytesIO() as f:
-                    plt.savefig(f, pad_inches=0.1, transparent=False, bbox_inches="tight")
+                    plt.savefig(
+                        f, pad_inches=0.1, transparent=False, bbox_inches="tight"
+                    )
                     f.seek(0)
                     await user_obj.send(file=discord.File(f, "reveal.png"))
 

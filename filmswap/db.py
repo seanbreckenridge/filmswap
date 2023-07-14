@@ -308,7 +308,7 @@ def join_swap(user_id: int, name: str) -> None:
         if Swap.get_swap_period() == SwapPeriod.WATCH:
             logger.info(f"User {user_id} tried to join swap in WATCH period")
             raise RuntimeError(
-                "You cannot join the swap while one is already going on. Please wait until the next swap is announced"
+                "You cannot join the swap while one is already going on. Please wait until the next swap is announced. You can check the channel description for more info"
             )
 
         # check if user already in swap
