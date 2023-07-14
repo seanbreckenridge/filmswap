@@ -1,5 +1,6 @@
 from __future__ import annotations
 import asyncio
+import re
 import io
 import os
 import calendar
@@ -65,6 +66,21 @@ def users_without_santas() -> list[SwapUser]:
 def users_not_done_watching() -> list[SwapUser]:
     with Session(engine) as session:  # type: ignore[attr-defined]
         return session.query(SwapUser).filter_by(done_watching=False).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return]
+
+
+def filter_emoji(s: str) -> str:
+    emoji_pattern = re.compile(
+        "["
+        "\U0001F600-\U0001F64F"  # emoticons
+        "\U0001F300-\U0001F5FF"  # symbols & pictographs
+        "\U0001F680-\U0001F6FF"  # transport & map symbols
+        "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+        "\U00002702-\U000027B0"
+        "\U000024C2-\U0001F251"
+        "]+",
+        flags=re.UNICODE,
+    )
+    return emoji_pattern.sub(r"", s)
 
 
 class JoinSwapButton(discord.ui.View):
@@ -726,7 +742,11 @@ class Manage(discord.app_commands.Group):
             plt.clf()
             for user in users_with_both:
                 assert user.giftee_id is not None
-                graph.add_edge(user.name, id_to_names[user.giftee_id], color="red")
+                graph.add_edge(
+                    filter_emoji(user.name),
+                    filter_emoji(id_to_names[user.giftee_id]),
+                    color="red",
+                )
 
             options = {
                 "node_color": "blue",
