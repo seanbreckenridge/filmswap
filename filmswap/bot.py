@@ -10,6 +10,7 @@ from .db import (
     Swap,
     SwapPeriod,
     check_active_user,
+    set_letterboxd,
     review_my_gift_embed,
     review_my_letter_embed,
     receive_gift_embed,
@@ -73,6 +74,11 @@ def help_embed() -> discord.Embed:
     embed.add_field(
         name="/done-watching",
         value="Mark your gift as watched",
+        inline=True,
+    )
+    embed.add_field(
+        name="/letterboxd",
+        value="Set your letterboxd account (this is optional)",
         inline=True,
     )
     embed.add_field(
@@ -352,6 +358,29 @@ def create_bot() -> discord.Client:
 
         await interaction.response.send_message(
             "Your gift has been marked as watched", ephemeral=True
+        )
+
+    @bot.tree.command(name="letterboxd", description="Set your letterboxd username")  # type: ignore[arg-type]
+    async def letterboxd(interaction: discord.Interaction, username: str) -> None:
+        logger.info(
+            f"User {interaction.user.id} {interaction.user.display_name} used letterboxd"
+        )
+
+        if await error_if_not_in_dm(interaction):
+            return
+
+        if await not_active_user(interaction):
+            return
+
+        try:
+            set_letterboxd(interaction.user.id, username)
+        except RuntimeError as e:
+            return await interaction.response.send_message(
+                f"Error: {e}", ephemeral=True
+            )
+
+        await interaction.response.send_message(
+            f"Your letterboxd username has been set to {username}", ephemeral=True
         )
 
     @bot.event

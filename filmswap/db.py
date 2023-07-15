@@ -212,6 +212,8 @@ class SwapUser(Base):
     # giftee is the user who this user is gifting to (i.e. giftee)
     giftee_id = Column(Integer, nullable=True, default=None)
 
+    letterboxd_username = Column(String(64), nullable=True, default=None)
+
 
 class Banned(Base):
     __tablename__ = "banned"
@@ -397,6 +399,18 @@ def set_gift(user_id: int, gift: str) -> None:
         assert len(gift) <= 1900, "Gift too long, must be less than 1900 characters"
         logger.info(f"User {user_id} set their gift for {swap_user.giftee_id}: {gift}")
         swap_user.gift = gift
+        session.add(swap_user)
+        session.commit()
+
+
+def set_letterboxd(user_id: int, letterboxd: str) -> None:
+    with Session(engine) as session:  # type: ignore[attr-defined]
+        swap_user = session.query(SwapUser).filter_by(user_id=user_id).one()
+        assert (
+            len(letterboxd) <= 64
+        ), "Letterboxd too long, must be less than 64 characters"
+        logger.info(f"User {user_id} set their letterboxd to {letterboxd}")
+        swap_user.letterboxd_username = letterboxd
         session.add(swap_user)
         session.commit()
 

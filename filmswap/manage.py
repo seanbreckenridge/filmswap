@@ -50,22 +50,22 @@ def havent_set_letter() -> list[SwapUser]:
 
 def havent_submitted_gift() -> list[SwapUser]:
     with Session(engine) as session:  # type: ignore[attr-defined]
-        return session.query(SwapUser).filter_by(gift=None).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return]
+        return session.query(SwapUser).filter_by(gift=None).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return,attr-defined]
 
 
 def users_without_giftees() -> list[SwapUser]:
     with Session(engine) as session:  # type: ignore[attr-defined]
-        return session.query(SwapUser).filter_by(giftee_id=None).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return]
+        return session.query(SwapUser).filter_by(giftee_id=None).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return,attr-defined]
 
 
 def users_without_santas() -> list[SwapUser]:
     with Session(engine) as session:  # type: ignore[attr-defined]
-        return session.query(SwapUser).filter_by(santa_id=None).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return]
+        return session.query(SwapUser).filter_by(santa_id=None).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return,attr-defined]
 
 
 def users_not_done_watching() -> list[SwapUser]:
     with Session(engine) as session:  # type: ignore[attr-defined]
-        return session.query(SwapUser).filter_by(done_watching=False).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return]
+        return session.query(SwapUser).filter_by(done_watching=False).filter(SwapUser.letter.is_not(None)).all()  # type: ignore[no-any-return,attr-defined]
 
 
 def filter_emoji(s: str) -> str:
@@ -638,7 +638,9 @@ class Manage(discord.app_commands.Group):
         name="set-user-done-watching", description="Set /done-watching for a user"
     )
     async def set_watching(
-        self, interaction: discord.Interaction, member: discord.Member
+        self,
+        interaction: discord.Interaction,
+        member: discord.Member,
     ) -> None:
         logger.info(f"Admin setting done watching for {member.id}")
 
