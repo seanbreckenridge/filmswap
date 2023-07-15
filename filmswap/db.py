@@ -608,6 +608,11 @@ def snapshot_database() -> None:
         }
         swapuser_lst = []
         for swapuser in swapusers:
+            if swapuser.santa_id is None or swapuser.giftee_id is None or swapuser.letter is None:
+                logger.info(
+                    f"User {swapuser.user_id} {swapuser.name} has not been assigned a santa or giftee yet, skipping"
+                )
+                continue
             swapuser_lst.append(
                 {
                     "id": swapuser.id,  # internal id
