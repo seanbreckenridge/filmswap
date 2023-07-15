@@ -7,5 +7,5 @@ cd "${THIS_DIR}/.." || exit $?
 
 for file in migrations/*.sql; do
 	echo "Running $file"
-	sqlite3 filmswap.db < "$file" || true
+	sqlite3 filmswap.db <"$file" || true
 done

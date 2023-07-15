@@ -1,8 +1,10 @@
 from __future__ import annotations
+import json
 import random
 import os
 import enum
 import time
+from typing import Any
 
 import discord
 
@@ -590,6 +592,47 @@ def snapshot_database() -> None:
         settings.SQLITEDB_PATH,
         os.path.join(settings.BACKUP_DIR, f"{int(time.time())}.sqlite"),
     )
+
+    # make JSON export of swapuser data
+
+    with Session(engine) as session:  # type: ignore[attr-defined]
+        swapusers = session.query(SwapUser).all()
+
+        user_map = {}
+        for swapuser in swapusers:
+            user_map[swapuser.user_id] = swapuser
+
+        swapusers_json: dict[str, Any] = {
+            "exported_at": int(time.time()),
+            "banned": [u.user_id for u in session.query(Banned).all()],
+        }
+        swapuser_lst = []
+        for swapuser in swapusers:
+            swapuser_lst.append(
+                {
+                    "id": swapuser.id,  # internal id
+                    "user_id": swapuser.user_id,  # discord user id
+                    "name": swapuser.name,
+                    "santa_id": swapuser.santa_id,
+                    "giftee_id": swapuser.giftee_id,
+                    "santa_name": user_map[swapuser.santa_id].name
+                    if swapuser.santa_id is not None
+                    else None,
+                    "giftee_name": user_map[swapuser.giftee_id].name
+                    if swapuser.giftee_id is not None
+                    else None,
+                    "letter": swapuser.letter,
+                    "gave_gift": swapuser.gift,
+                    "letterboxd": swapuser.letterboxd_username,
+                    "received_gift": user_map[swapuser.santa_id].gift,
+                    "done": swapuser.done_watching,
+                }
+            )
+
+        swapusers_json["swapusers"] = swapuser_lst
+
+    with open(os.path.join(settings.BACKUP_DIR, f"{int(time.time())}.json"), "w") as f:
+        json.dump(swapusers_json, f, indent=4)
 
 
 # sqlite database which stores data

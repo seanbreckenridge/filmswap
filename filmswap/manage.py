@@ -822,7 +822,7 @@ class Manage(discord.app_commands.Group):
                     await user_obj.send(file=discord.File(f, "reveal.png"))
 
     @discord.app_commands.command(  # type: ignore[arg-type]
-        name="backup-db", description="Backup the database"
+        name="backup-database", description="Backup the database"
     )
     async def backup(self, interaction: discord.Interaction) -> None:
         logger.info(f"User {interaction.user.id} backing up database")
@@ -832,12 +832,16 @@ class Manage(discord.app_commands.Group):
 
         snapshot_database()
 
-        files = Path(settings.BACKUP_DIR).glob("*.sqlite")
+        files = Path(settings.BACKUP_DIR).glob("*.json")
         latest = max(files, key=os.path.getmtime)
 
         await interaction.response.send_message(
-            f"Saved database backup to {latest.name}", ephemeral=True
+            f"Saved database backup and JSON snapshot", ephemeral=True
         )
+
+        # send the JSON export
+        with open(latest, "rb") as f:
+            await interaction.user.send(file=discord.File(f, latest.name))
 
     @discord.app_commands.command(  # type: ignore[arg-type]
         name="create-final-thoughts-thread",
