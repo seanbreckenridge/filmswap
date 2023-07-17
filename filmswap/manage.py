@@ -452,6 +452,8 @@ class Manage(discord.app_commands.Group):
 
             session.commit()
 
+        logger.info("Done updating usernames")
+
     @discord.app_commands.command(  # type: ignore[arg-type]
         name="match-users",
         description="Match all users. Requires at least 2 unmatched users, can be run later to match latecomers",
