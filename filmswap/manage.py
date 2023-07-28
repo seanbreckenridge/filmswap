@@ -757,11 +757,10 @@ class Manage(discord.app_commands.Group):
             "circle",
             "random",
             "kamada_kawai",
-            "planar",
             "spring",
             "spectral",
             "randomize",  # as in, pick a random layout, don't use the "random" layout
-        ],
+        ] = "spring",
         count: int = 1,
     ) -> None:
         logger.info(f"User {interaction.user.id} revealing connections -- {format}")
@@ -828,7 +827,6 @@ class Manage(discord.app_commands.Group):
                     "circle": nx.circular_layout,
                     "random": nx.random_layout,
                     "kamada_kawai": nx.kamada_kawai_layout,
-                    "planar": nx.planar_layout,
                     "spring": nx.spring_layout,
                     "spectral": nx.spectral_layout,
                 }
