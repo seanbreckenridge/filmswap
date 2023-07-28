@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class Environment(str, Enum):
@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     BOT_NAME: str = "FilmSwap"
     MODIFY_ROLES: bool = False
     PERIOD_POST_HOOK: bool = True
+    FILMSWAP_TOKEN: str
+    BACKUPS_DIR: str = "backups"
 
     class Config:
         case_sensitive = False

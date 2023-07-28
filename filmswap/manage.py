@@ -5,6 +5,7 @@ import io
 import os
 import calendar
 import datetime
+import random
 from pathlib import Path
 from typing import Literal
 
@@ -752,6 +753,15 @@ class Manage(discord.app_commands.Group):
         self,
         interaction: discord.Interaction,
         format: Literal["text", "graph"],
+        graph_layout: Literal[
+            "circle",
+            "random",
+            "kamada_kawai",
+            "planar",
+            "spring",
+            "spectral",
+            "randomize",  # as in, pick a random layout, don't use the "random" layout
+        ],
         count: int = 1,
     ) -> None:
         logger.info(f"User {interaction.user.id} revealing connections -- {format}")
@@ -814,14 +824,36 @@ class Manage(discord.app_commands.Group):
                     "font_color": "black",
                 }
 
-                nx.draw_networkx(graph, arrows=True, **options)
+                func = {
+                    "circle": nx.circular_layout,
+                    "random": nx.random_layout,
+                    "kamada_kawai": nx.kamada_kawai_layout,
+                    "planar": nx.planar_layout,
+                    "spring": nx.spring_layout,
+                    "spectral": nx.spectral_layout,
+                }
+                if graph_layout in func:
+                    layout_name = graph_layout
+                    pos = func[graph_layout](graph)
+                elif graph_layout == "randomize":
+                    chosen_func = random.choice(list(func.values()))
+                    layout_name = chosen_func.__name__
+                    pos = chosen_func(graph)
+                else:
+                    return await interaction.response.send_message(
+                        f"Error: Unknown graph layout {graph_layout}", ephemeral=True
+                    )
+                nx.draw_networkx(graph, pos, arrows=True, **options)
                 plt.box(False)
                 with io.BytesIO() as f:
                     plt.savefig(
                         f, pad_inches=0.1, transparent=False, bbox_inches="tight"
                     )
                     f.seek(0)
-                    await user_obj.send(file=discord.File(f, "reveal.png"))
+                    await user_obj.send(
+                        f"Reveal with {layout_name}",
+                        file=discord.File(f, "reveal.png"),
+                    )
 
     @discord.app_commands.command(  # type: ignore[arg-type]
         name="backup-database", description="Backup the database"

@@ -14,6 +14,8 @@ sqlalchemy-stubs = "*"
 matplotlib = "*"
 networkx = "*"
 sqlite-backup = "*"
+scipy = "*"
+pydantic-settings = "*"
 
 [dev-packages]
 ipdb = "*"
