@@ -157,6 +157,13 @@ class Swap(Base):
                     msg = "Matched all users with their giftee/santas"
                 except RuntimeError as e:
                     msg = f"Warning: couldnt match users -- {e}"
+
+                # set done_watching to False for all users
+                users = session.query(SwapUser).all()
+                logger.info(f"Setting done_watching to False for {len(users)} users")
+                for user in users:
+                    user.done_watching = False
+                    session.add(user)
             elif period == SwapPeriod.JOIN:
                 snapshot_database()
                 logger.info("Running db logic for JOIN period")
@@ -167,7 +174,6 @@ class Swap(Base):
                     user.santa_id = None
                     user.giftee_id = None
                     user.gift = None
-                    user.done_watching = False
                     session.add(user)
 
             swap.period = period  # type: ignore[assignment]
