@@ -602,7 +602,9 @@ class Manage(discord.app_commands.Group):
             await _fix_connections_after_ban_or_leave(user_id, self.get_bot())
         except (RuntimeError, AssertionError) as e:
             logger.exception(e, exc_info=True)
-            await interaction.response.send_message(f"Error: {e}", ephemeral=True)
+            # send message to person who ran the command
+            user = await self.get_bot().fetch_user(interaction.user.id)
+            await user.send(f"Error: {e}")
             return
 
     @discord.app_commands.command(  # type: ignore[arg-type]
