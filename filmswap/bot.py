@@ -389,6 +389,7 @@ def create_bot() -> discord.Client:
 
     @bot.event
     async def on_message(message: discord.Message) -> None:
+        # TODO: try removing this? bot is using tree commands, not the discord commands extension, so I might not need this
         await bot.process_commands(message)
 
         # these commands only work in DMs, so users can write out long paragraphs
