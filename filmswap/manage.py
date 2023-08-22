@@ -203,7 +203,7 @@ async def _fix_connections_after_ban_or_leave(user_id: int, bot: commands.Bot) -
     # should run /read again to gift to their new giftee
     #
     # similarly, we should send a message to C saying that their santa was banned, and they
-    # should recieve their gift shortly (it might be after the watch period starts, but hopefully soon)
+    # should receive their gift shortly (it might be after the watch period starts, but hopefully soon)
 
     santa = get_santa(user_id)
     giftee = get_giftee(user_id)
@@ -273,7 +273,7 @@ async def _fix_connections_after_ban_or_leave(user_id: int, bot: commands.Bot) -
     )
     await asyncio.sleep(1)
     await giftee_discord_user.send(
-        "Your santa was banned from the swap. You will recieve your gift shortly, but it might be after the watch period starts. If you don't have it soon, feel free to mention it in the channel"
+        "Your santa was banned from the swap. You will receive your gift shortly, but it might be after the watch period starts. If you don't have it soon, feel free to mention it in the channel"
     )
 
 

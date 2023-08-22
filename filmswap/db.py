@@ -491,7 +491,7 @@ def receive_gift_embed(user_id: int, raise_if_missing: bool = False) -> discord.
     This is how a user receives their gift, to see what their santa recommended them
     """
     with Session(engine) as session:  # type: ignore[attr-defined]
-        # to recieve gift, find the user whos giftee is this user
+        # to receive gift, find the user whos giftee is this user
         santa_user = session.query(SwapUser).filter_by(giftee_id=user_id).one_or_none()
         if santa_user is None:
             logger.info(
