@@ -298,7 +298,7 @@ def create_bot() -> discord.Client:
         # if user uses this in dm, tell them to use it in the server instead
         if interaction.guild is None:
             await interaction.response.send_message(
-                "Please use this command in the server (e.g. in the bot-commands channel) instead of in DMs",
+                "Please use this command in the server (e.g. in the film-swap channel) instead of in DMs",
                 ephemeral=True,
             )
             return
