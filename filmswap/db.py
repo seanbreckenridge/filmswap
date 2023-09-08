@@ -348,6 +348,7 @@ def leave_swap(user_id: int) -> None:
             raise RuntimeError(
                 "You are already not in the swap. To rejoin, click the 'join button' in the swap channel"
             )
+        logger.info(f"Deleting {user_id} from the database")
         session.delete(swap_user)
         session.commit()
 
@@ -614,7 +615,11 @@ def snapshot_database() -> None:
         }
         swapuser_lst = []
         for swapuser in swapusers:
-            if swapuser.santa_id is None or swapuser.giftee_id is None or swapuser.letter is None:
+            if (
+                swapuser.santa_id is None
+                or swapuser.giftee_id is None
+                or swapuser.letter is None
+            ):
                 logger.info(
                     f"User {swapuser.user_id} {swapuser.name} has not been assigned a santa or giftee yet, skipping"
                 )
