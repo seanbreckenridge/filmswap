@@ -156,7 +156,7 @@ class Swap(Base):
                     Swap.match_users()
                     msg = "Matched all users with their giftee/santas"
                 except RuntimeError as e:
-                    msg = f"Warning: couldnt match users -- {e}"
+                    msg = f"Warning: couldn't match users -- {e}"
 
                 # set done_watching to False for all users
                 users = session.query(SwapUser).all()
@@ -492,7 +492,7 @@ def receive_gift_embed(user_id: int, raise_if_missing: bool = False) -> discord.
     This is how a user receives their gift, to see what their santa recommended them
     """
     with Session(engine) as session:  # type: ignore[attr-defined]
-        # to receive gift, find the user whos giftee is this user
+        # to receive gift, find the user whose giftee is this user
         santa_user = session.query(SwapUser).filter_by(giftee_id=user_id).one_or_none()
         if santa_user is None:
             logger.info(

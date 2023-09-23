@@ -269,7 +269,7 @@ async def _fix_connections_after_ban_or_leave(user_id: int, bot: commands.Bot) -
     await asyncio.sleep(1)
 
     await santa_discord_user.send(
-        "Your giftee was banned from the swap. You have been assigned a new giftee. Please run /read again to read their letter, and send them a gift.\nIf youre not able to set a gift, you can use >write-giftee to send a message to them instead"
+        "Your giftee was banned from the swap. You have been assigned a new giftee. Please run /read again to read their letter, and send them a gift.\nIf you're not able to set a gift, you can use >write-giftee to send a message to them instead"
     )
     await asyncio.sleep(1)
     await giftee_discord_user.send(
@@ -477,7 +477,7 @@ class Manage(discord.app_commands.Group):
 
     @discord.app_commands.command(  # type: ignore[arg-type]
         name="unmatch-users",
-        description="Unmatch all users the swap. This wont delete gifts/letters, just remove all connections",
+        description="Unmatch all users the swap. This won't delete gifts/letters, just remove all connections",
     )
     async def unmatch_users(self, interaction: discord.Interaction) -> None:
         """

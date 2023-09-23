@@ -6,7 +6,7 @@ bot to anonymously swap films with other users to watch
 
 Run on `python 3.11.3`
 
-Requies:
+Requires:
 
 - manage roles
 - embed links

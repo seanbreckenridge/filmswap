@@ -562,7 +562,7 @@ def create_bot() -> discord.Client:
                     f"User {message.author.id} tried to send message to santa but their santa's ID {santa.user_id} is invalid"
                 )
                 await message.author.send(
-                    "There was an error messaging your santa, could not assosiate their ID with a discord account."
+                    "There was an error messaging your santa, could not associate their ID with a discord account."
                 )
                 return
             else:
@@ -623,7 +623,7 @@ def create_bot() -> discord.Client:
                     f"User {message.author.id} tried to send message to giftee but their giftee's ID {giftee.user_id} is invalid"
                 )
                 await message.author.send(
-                    "There was an error messaging your giftee, could not assosiate their ID with a discord account."
+                    "There was an error messaging your giftee, could not associate their ID with a discord account."
                 )
                 return
             else:
