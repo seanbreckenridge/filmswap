@@ -512,7 +512,7 @@ def create_bot() -> discord.Client:
             )
             await message.reply(embed=review_my_gift_embed(message.author.id))
             await message.reply(
-                "Since you can change your subimssion by running /submit before the SWAP period ends, your giftee does not receive their gift immediately.\nIf you're confident in your gift or want to send it early, you can also use >write-giftee to send it to your giftee early"
+                "Since you can change your gift by running /submit again before the SWAP period ends, your giftee does not receive their gift immediately.\nIf you're confident in your gift or want to send it early, you can also use >write-giftee to send it to your giftee early"
             )
 
         elif content.startswith(">write-santa"):
