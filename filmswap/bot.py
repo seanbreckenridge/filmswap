@@ -638,6 +638,13 @@ def create_bot() -> discord.Client:
                 embed.set_footer(text="To reply, use >write-santa [text]")
                 await giftee_user.send(embed=embed)
                 await message.author.send("Your message has been sent")
+        elif content.startswith(">"):
+            logger.info(
+                f"User {message.author.id} {message.author.display_name} sent unknown command {content}"
+            )
+            await message.author.send(
+                "Unknown command. Use `/help` to see a list of commands"
+            )
 
     @bot.tree.command()  # type: ignore[arg-type]
     async def help(interaction: discord.Interaction) -> None:
