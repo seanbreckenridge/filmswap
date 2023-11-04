@@ -416,7 +416,7 @@ def create_bot() -> discord.Client:
                 if user_has_letter(message.author.id):
                     # already has letter, check if they are allowed to change it right now
                     await message.author.send(
-                        "Sorry, you can't change your letter right now. Wait till the beginning of the next swap to change it",
+                        "Sorry, you can't change your letter right now. Wait till the beginning of the next swap to change it.\nIf you want to review your letter, you can use `/review-letter`",
                     )
                     return
 
@@ -481,7 +481,7 @@ def create_bot() -> discord.Client:
                 )
                 # already has gift, check if they are allowed to change it right now
                 await message.author.send(
-                    "Sorry, you can't change your gift right now. If you need to communicate with your giftee, you can use >write-giftee to send them a message",
+                    "Sorry, you can't change your gift right now. If you need to communicate with your giftee, you can use >write-giftee to send them a message.\nIf you want to review the gift you sent, use `/review-gift`",
                 )
                 return
 
