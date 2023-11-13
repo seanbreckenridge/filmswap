@@ -190,9 +190,10 @@ async def error_if_not_admin(interaction: discord.Interaction) -> bool:
 
 
 async def update_usernames(guild: discord.Guild) -> None:
-    logger.info("Starting to update usernames")
+    logger.info("Starting to update usernames...")
     with Session(engine) as session:  # type: ignore[attr-defined]
         users = session.query(SwapUser).all()
+        logger.info(f"Checking usernames for {len(users)} users...")
         for user in users:
             try:
                 member = await guild.fetch_member(user.user_id)
@@ -875,7 +876,7 @@ class Manage(discord.app_commands.Group):
         latest = max(files, key=os.path.getmtime)
 
         await interaction.response.send_message(
-            f"Saved database backup and JSON snapshot", ephemeral=True
+            "Saved database backup and JSON snapshot", ephemeral=True
         )
 
         # send the JSON export

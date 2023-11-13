@@ -95,6 +95,18 @@ def help_embed() -> discord.Embed:
     return embed
 
 
+async def background_tasks(bot: discord.Client) -> None:
+    while True:
+        gld = bot.get_guild(settings.GUILD_ID)
+        if gld is None:
+            logger.warning(
+                f"Cannot fetch guild with ID {settings.GUILD_ID}, cannot update usernames",
+            )
+            return
+        await update_usernames(gld)
+        await asyncio.sleep(60 * 60 * 24)
+
+
 def create_bot() -> discord.Client:
     intents = discord.Intents.default()
     intents.members = True
@@ -711,6 +723,13 @@ def create_bot() -> discord.Client:
 
         await bot.tree.sync()
 
+        await bot.change_presence(
+            activity=discord.Activity(type=discord.ActivityType.watching, name="/help")
+        )
+
+        logger.info("Starting background tasks...")
+        bot.loop.create_task(background_tasks(bot))
+
     def filmswap_role_id() -> int:
         rid = bot._filmswap_role.id  # type: ignore
         assert rid is not None
@@ -718,20 +737,5 @@ def create_bot() -> discord.Client:
         return rid
 
     bot.filmswap_role_id = filmswap_role_id  # type: ignore
-
-    logger.info("Starting update usernames loop")
-
-    async def _update_usernames_once_a_day() -> None:
-        while True:
-            gld = bot.get_guild(settings.GUILD_ID)
-            if gld is None:
-                logger.warning(
-                    f"Cannot fetch guild with ID {settings.GUILD_ID}, cannot update usernames",
-                )
-                return
-            await update_usernames(gld)
-            await asyncio.sleep(60 * 60 * 24)
-
-    bot.loop.create_task(_update_usernames_once_a_day())
 
     return bot
