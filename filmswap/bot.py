@@ -2,6 +2,7 @@ from __future__ import annotations
 from logzero import logger  # type: ignore[import]
 
 import os
+import asyncio
 import discord
 import discord.abc
 from discord.ext import commands
@@ -26,7 +27,7 @@ from .db import (
     has_giftee,
 )
 from .settings import settings, Environment
-from .manage import Manage, JoinSwapButton
+from .manage import Manage, JoinSwapButton, update_usernames
 
 
 def help_embed() -> discord.Embed:
@@ -717,5 +718,20 @@ def create_bot() -> discord.Client:
         return rid
 
     bot.filmswap_role_id = filmswap_role_id  # type: ignore
+
+    logger.info("Starting update usernames loop")
+
+    async def _update_usernames_once_a_day() -> None:
+        while True:
+            gld = bot.get_guild(settings.GUILD_ID)
+            if gld is None:
+                logger.warning(
+                    f"Cannot fetch guild with ID {settings.GUILD_ID}, cannot update usernames",
+                )
+                return
+            await update_usernames(gld)
+            await asyncio.sleep(60 * 60 * 24)
+
+    bot.loop.create_task(_update_usernames_once_a_day())
 
     return bot

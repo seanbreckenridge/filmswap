@@ -189,6 +189,33 @@ async def error_if_not_admin(interaction: discord.Interaction) -> bool:
     return False
 
 
+async def update_usernames(guild: discord.Guild) -> None:
+    logger.info("Starting to update usernames")
+    with Session(engine) as session:  # type: ignore[attr-defined]
+        users = session.query(SwapUser).all()
+        for user in users:
+            try:
+                member = await guild.fetch_member(user.user_id)
+            except discord.NotFound:
+                logger.info(
+                    f"Could not find member {user.user_id} {user.name}, skipping"
+                )
+                continue
+
+            if member.display_name != user.name:
+                logger.info(
+                    f"Updating {user.user_id} {user.name} to {member.display_name}"
+                )
+            user.name = member.display_name
+            session.add(user)
+
+            await asyncio.sleep(0.5)
+
+        session.commit()
+
+    logger.info("Done updating usernames")
+
+
 async def _fix_connections_after_ban_or_leave(user_id: int, bot: commands.Bot) -> None:
     # if the user is banned, we need to remove them from the swap
     # but this also means that if they had a santa/giftee, we need to fix the
@@ -431,29 +458,7 @@ class Manage(discord.app_commands.Group):
             "Updating usernames, this may take a few seconds...", ephemeral=True
         )
 
-        with Session(engine) as session:  # type: ignore[attr-defined]
-            users = session.query(SwapUser).all()
-            for user in users:
-                try:
-                    member = await guild.fetch_member(user.user_id)
-                except discord.NotFound:
-                    logger.info(
-                        f"Could not find member {user.user_id} {user.name}, skipping"
-                    )
-                    continue
-
-                if member.display_name != user.name:
-                    logger.info(
-                        f"Updating {user.user_id} {user.name} to {member.display_name}"
-                    )
-                user.name = member.display_name
-                session.add(user)
-
-                await asyncio.sleep(0.5)
-
-            session.commit()
-
-        logger.info("Done updating usernames")
+        await update_usernames(guild)
 
     @discord.app_commands.command(  # type: ignore[arg-type]
         name="match-users",
