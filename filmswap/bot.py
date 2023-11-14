@@ -110,7 +110,8 @@ async def background_tasks(bot: discord.Client) -> None:
 def create_bot() -> discord.Client:
     intents = discord.Intents.default()
     intents.members = True
-    bot = commands.Bot(command_prefix=commands.when_mentioned, intents=intents)
+    activity = discord.Activity(type=discord.ActivityType.watching, name="kino, using /help")
+    bot = commands.Bot(command_prefix=commands.when_mentioned, intents=intents, activity=activity)
 
     async def error_if_not_in_dm(ctx: discord.Interaction | commands.Context) -> bool:  # type: ignore[type-arg]
         if isinstance(ctx, commands.Context):
@@ -722,10 +723,6 @@ def create_bot() -> discord.Client:
         await bot.user.edit(username=settings.BOT_NAME)
 
         await bot.tree.sync()
-
-        await bot.change_presence(
-            activity=discord.Activity(type=discord.ActivityType.watching, name="/help")
-        )
 
         logger.info("Starting background tasks...")
         bot.loop.create_task(background_tasks(bot))
