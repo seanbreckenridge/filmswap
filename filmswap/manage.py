@@ -896,14 +896,14 @@ class Manage(discord.app_commands.Group):
             return
 
         bot = self.get_bot()
-        swap_channel_id = Swap.get_join_button_message_id()
-        if swap_channel_id is None:
+        swap_info = Swap.get_swap()
+        if swap_info.swap_channel_discord_id is None:
             logger.info("No channel set for swap")
             await interaction.response.send_message(
                 "Error: No channel set for swap", ephemeral=True
             )
             return
-        channel = await bot.fetch_channel(swap_channel_id)
+        channel = await bot.fetch_channel(swap_info.swap_channel_discord_id)
         assert isinstance(channel, discord.TextChannel)
 
         # check if we're creating a duplicate thread
