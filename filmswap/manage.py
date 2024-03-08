@@ -199,8 +199,10 @@ async def update_usernames(guild: discord.Guild) -> None:
                 member = await guild.fetch_member(user.user_id)
             except discord.NotFound:
                 logger.info(
-                    f"Could not find member {user.user_id} {user.name}, skipping"
+                    f"Could not find member {user.user_id} {user.name}, setting letter to None and skipping"
                 )
+                user.letter = None
+                session.add(user)
                 continue
 
             if member.display_name != user.name:
