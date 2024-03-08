@@ -28,6 +28,7 @@ from .db import (
 )
 from .settings import settings, Environment
 from .manage import Manage, JoinSwapButton, update_usernames
+from ._types import ClientT
 
 
 def help_embed() -> discord.Embed:
@@ -110,10 +111,14 @@ async def background_tasks(bot: discord.Client) -> None:
 def create_bot() -> discord.Client:
     intents = discord.Intents.default()
     intents.members = True
-    activity = discord.Activity(type=discord.ActivityType.watching, name="kino, using /help")
-    bot = commands.Bot(command_prefix=commands.when_mentioned, intents=intents, activity=activity)
+    activity = discord.Activity(
+        type=discord.ActivityType.watching, name="kino, using /help"
+    )
+    bot = commands.Bot(
+        command_prefix=commands.when_mentioned, intents=intents, activity=activity
+    )
 
-    async def error_if_not_in_dm(ctx: discord.Interaction | commands.Context) -> bool:  # type: ignore[type-arg]
+    async def error_if_not_in_dm(ctx: discord.Interaction[ClientT] | commands.Context) -> bool:  # type: ignore[type-arg]
         if isinstance(ctx, commands.Context):
             if ctx.guild is not None:
                 await ctx.author.send(
@@ -136,7 +141,7 @@ def create_bot() -> discord.Client:
                 return True
         return False
 
-    async def not_active_user(ctx: discord.Interaction | commands.Context) -> bool:  # type: ignore[type-arg]
+    async def not_active_user(ctx: discord.Interaction[ClientT] | commands.Context) -> bool:  # type: ignore[type-arg]
         """
         returns True if user is not active, False if user is active
         """
@@ -152,7 +157,7 @@ def create_bot() -> discord.Client:
         return False
 
     @bot.tree.command(name="review-letter", description="Review your letter")  # type: ignore[arg-type]
-    async def review_letter(interaction: discord.Interaction) -> None:
+    async def review_letter(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.name} reviewing their own letter"
         )
@@ -170,7 +175,7 @@ def create_bot() -> discord.Client:
         name="letter-help",
         description="Write the letter your santa will see. Use >letter [text] instead",
     )
-    async def letter_help(interaction: discord.Interaction) -> None:
+    async def letter_help(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used letter"
         )
@@ -190,7 +195,7 @@ def create_bot() -> discord.Client:
         name="write-santa-help",
         description="Write an anonymous message to your santa. Use >write-santa [text] instead",
     )
-    async def write_santa_help(interaction: discord.Interaction) -> None:
+    async def write_santa_help(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used write-santa"
         )
@@ -210,7 +215,7 @@ def create_bot() -> discord.Client:
         name="write-giftee-help",
         description="Write an anonymous message to your giftee. Use >write-giftee [text] instead",
     )
-    async def write_giftee_help(interaction: discord.Interaction) -> None:
+    async def write_giftee_help(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used write-giftee"
         )
@@ -227,7 +232,7 @@ def create_bot() -> discord.Client:
         )
 
     @bot.tree.command(name="review-gift", description="Review your gift")  # type: ignore[arg-type]
-    async def review_gift(interaction: discord.Interaction) -> None:
+    async def review_gift(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} viewing their own gift (the one they submitted)"
         )
@@ -242,7 +247,7 @@ def create_bot() -> discord.Client:
         name="submit-help",
         description="Submit gift for your giftee (your recommendation). Use >submit instead",
     )
-    async def submit_help(interaction: discord.Interaction) -> None:
+    async def submit_help(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} submitting gift"
         )
@@ -259,7 +264,7 @@ def create_bot() -> discord.Client:
         )
 
     @bot.tree.command(name="receive", description="Read the gift from your Santa")  # type: ignore[arg-type]
-    async def receive(interaction: discord.Interaction) -> None:
+    async def receive(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used receive"
         )
@@ -274,7 +279,7 @@ def create_bot() -> discord.Client:
         await interaction.response.send_message(embed=gift, ephemeral=True)
 
     @bot.tree.command(name="read", description="Read the letter from your giftee")  # type: ignore[arg-type]
-    async def read(interaction: discord.Interaction) -> None:
+    async def read(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used read"
         )
@@ -289,7 +294,7 @@ def create_bot() -> discord.Client:
         await interaction.response.send_message(embed=letter, ephemeral=True)
 
     @bot.tree.command(name="leave", description="Leave the film swap")  # type: ignore[arg-type]
-    async def leave(interaction: discord.Interaction) -> None:
+    async def leave(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used leave"
         )
@@ -345,7 +350,7 @@ def create_bot() -> discord.Client:
         await _remove_role()
 
     @bot.tree.command(name="done-watching", description="Mark your gift as watched")  # type: ignore[arg-type]
-    async def done_watching(interaction: discord.Interaction) -> None:
+    async def done_watching(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used done-watching"
         )
@@ -375,7 +380,7 @@ def create_bot() -> discord.Client:
         )
 
     @bot.tree.command(name="letterboxd", description="Set your letterboxd username")  # type: ignore[arg-type]
-    async def letterboxd(interaction: discord.Interaction, username: str) -> None:
+    async def letterboxd(interaction: discord.Interaction[ClientT], username: str) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used letterboxd"
         )
@@ -661,7 +666,7 @@ def create_bot() -> discord.Client:
             )
 
     @bot.tree.command()  # type: ignore[arg-type]
-    async def help(interaction: discord.Interaction) -> None:
+    async def help(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} requested help"
         )

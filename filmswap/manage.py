@@ -35,6 +35,7 @@ from .db import (
     engine,
     SwapUser,
 )
+from ._types import ClientT
 
 DISABLE_UNMATCH = True
 
@@ -105,7 +106,7 @@ class JoinSwapButton(discord.ui.View):
         custom_id="filmswap:join_swap",
     )
     async def join_swap(
-        self, interaction: discord.Interaction, button: discord.ui.Button  # type: ignore[type-arg]
+        self, interaction: discord.Interaction[ClientT], button: discord.ui.Button  # type: ignore[type-arg]
     ) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} clicked button to join swap"
@@ -154,7 +155,7 @@ class JoinSwapButton(discord.ui.View):
 
 
 # returns True if this errored
-async def error_if_not_admin(interaction: discord.Interaction) -> bool:
+async def error_if_not_admin(interaction: discord.Interaction[ClientT]) -> bool:
     if interaction.guild is None or interaction.guild.id != settings.GUILD_ID:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} tried to use admin command in DMs"
@@ -317,7 +318,7 @@ class Manage(discord.app_commands.Group):
     @discord.app_commands.command(  # type: ignore[arg-type]
         name="create", description="Create the swap for this server"
     )
-    async def create(self, interaction: discord.Interaction) -> None:
+    async def create(self, interaction: discord.Interaction[ClientT]) -> None:
         if await error_if_not_admin(interaction):
             return
 
@@ -333,7 +334,7 @@ class Manage(discord.app_commands.Group):
             return
 
     async def _set_period_post_hook(
-        self, interaction: discord.Interaction, successfully_set_to: SwapPeriod
+        self, interaction: discord.Interaction[ClientT], successfully_set_to: SwapPeriod
     ) -> None:
         """
         This handles sending out the letters to users when the swap period is set to SWAP
@@ -396,7 +397,9 @@ class Manage(discord.app_commands.Group):
         name="set-period",
         description="Set the period of the swap (e.g. join, swap, watch))",
     )
-    async def set_period(self, interaction: discord.Interaction, period: str) -> None:
+    async def set_period(
+        self, interaction: discord.Interaction[ClientT], period: str
+    ) -> None:
         logger.info(f"Setting period of swap to {period}")
 
         if await error_if_not_admin(interaction):
@@ -434,7 +437,7 @@ class Manage(discord.app_commands.Group):
 
     @set_period.autocomplete("period")
     async def set_period_autocomplete_period(
-        self, interaction: discord.Interaction, current: str
+        self, interaction: discord.Interaction[ClientT], current: str
     ) -> list[discord.app_commands.Choice[str]]:
         return [
             discord.app_commands.Choice(name=period.capitalize(), value=period)
@@ -446,7 +449,7 @@ class Manage(discord.app_commands.Group):
         name="update-usernames",
         description="Update all usernames to match their current discord username",
     )
-    async def update_usernames(self, interaction: discord.Interaction) -> None:
+    async def update_usernames(self, interaction: discord.Interaction[ClientT]) -> None:
         if await error_if_not_admin(interaction):
             return
 
@@ -467,7 +470,7 @@ class Manage(discord.app_commands.Group):
         name="match-users",
         description="Match all users. Requires at least 2 unmatched users, can be run later to match latecomers",
     )
-    async def match_users(self, interaction: discord.Interaction) -> None:
+    async def match_users(self, interaction: discord.Interaction[ClientT]) -> None:
         if await error_if_not_admin(interaction):
             return
 
@@ -487,7 +490,7 @@ class Manage(discord.app_commands.Group):
         name="unmatch-users",
         description="Unmatch all users the swap. This won't delete gifts/letters, just remove all connections",
     )
-    async def unmatch_users(self, interaction: discord.Interaction) -> None:
+    async def unmatch_users(self, interaction: discord.Interaction[ClientT]) -> None:
         """
         This is mostly a debug command, in case things go wrong
         """
@@ -517,7 +520,7 @@ class Manage(discord.app_commands.Group):
     )
     async def set_channel(
         self,
-        interaction: discord.Interaction,
+        interaction: discord.Interaction[ClientT],
         channel: discord.TextChannel,
     ) -> None:
         logger.info(f"Setting channel for swap to {channel}")
@@ -537,7 +540,9 @@ class Manage(discord.app_commands.Group):
         name="send-join-message",
         description="Send a message to the channel so people can join the swap",
     )
-    async def send_join_message(self, interaction: discord.Interaction) -> None:
+    async def send_join_message(
+        self, interaction: discord.Interaction[ClientT]
+    ) -> None:
         logger.info("Sending message to channel so people can join")
 
         if await error_if_not_admin(interaction):
@@ -578,7 +583,7 @@ class Manage(discord.app_commands.Group):
         name="filmswap-ban", description="Ban a user from the swap"
     )
     async def filmswap_ban(
-        self, interaction: discord.Interaction, discord_user_id: str
+        self, interaction: discord.Interaction[ClientT], discord_user_id: str
     ) -> None:
         if await error_if_not_admin(interaction):
             return
@@ -619,7 +624,7 @@ class Manage(discord.app_commands.Group):
         name="filmswap-unban", description="Unban a user from the swap"
     )
     async def filmswap_unban(
-        self, interaction: discord.Interaction, discord_user_id: str
+        self, interaction: discord.Interaction[ClientT], discord_user_id: str
     ) -> None:
         if await error_if_not_admin(interaction):
             return
@@ -652,7 +657,7 @@ class Manage(discord.app_commands.Group):
     )
     async def set_watching(
         self,
-        interaction: discord.Interaction,
+        interaction: discord.Interaction[ClientT],
         member: discord.Member,
     ) -> None:
         logger.info(f"Admin setting done watching for {member.id}")
@@ -672,7 +677,7 @@ class Manage(discord.app_commands.Group):
         )
 
     @discord.app_commands.command(name="info", description="Get info about the swap")  # type: ignore[arg-type]
-    async def info(self, interaction: discord.Interaction) -> None:
+    async def info(self, interaction: discord.Interaction[ClientT]) -> None:
         logger.info("Getting info for swap")
 
         if await error_if_not_admin(interaction):
@@ -761,7 +766,7 @@ class Manage(discord.app_commands.Group):
     )
     async def reveal(
         self,
-        interaction: discord.Interaction,
+        interaction: discord.Interaction[ClientT],
         format: Literal["text", "graph"],
         graph_layout: Literal[
             "circle",
@@ -866,7 +871,7 @@ class Manage(discord.app_commands.Group):
     @discord.app_commands.command(  # type: ignore[arg-type]
         name="backup-database", description="Backup the database"
     )
-    async def backup(self, interaction: discord.Interaction) -> None:
+    async def backup(self, interaction: discord.Interaction[ClientT]) -> None:
         logger.info(f"User {interaction.user.id} backing up database")
 
         if await error_if_not_admin(interaction):
@@ -890,7 +895,7 @@ class Manage(discord.app_commands.Group):
         description="Create the final thoughts thread for this month",
     )
     async def create_final_thoughts_thread(
-        self, interaction: discord.Interaction, name: str
+        self, interaction: discord.Interaction[ClientT], name: str
     ) -> None:
         logger.info(f"User {interaction.user.id} creating final thoughts thread")
 
@@ -937,7 +942,7 @@ class Manage(discord.app_commands.Group):
     # autocomplete names of the final thoughts thread
     @create_final_thoughts_thread.autocomplete("name")
     async def _autocomplete_thread_name(
-        self, interaction: discord.Interaction, current: str
+        self, interaction: discord.Interaction[ClientT], current: str
     ) -> list[discord.app_commands.Choice[str]]:
         # this should be a name like:
         # Final Thoughts (June 2023)
