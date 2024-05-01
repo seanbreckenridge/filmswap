@@ -453,7 +453,7 @@ def review_my_letter_embed(user_id: int) -> discord.Embed:
             )
 
     let = f"""Dear Santa,\n\n{swapuser.letter}\n\nLove, {swapuser.name}"""
-    embed = discord.Embed(title="Your received a letter!", description=let)
+    embed = discord.Embed(title="You received a letter!", description=let)
     return embed
 
 
@@ -483,7 +483,7 @@ def review_my_gift_embed(user_id: int) -> discord.Embed:
             )
 
         gift = f"""Dear {given_to.name},\n\n{swapuser.gift}\n\nLove, Santa"""
-        embed = discord.Embed(title="Your received a gift!", description=gift)
+        embed = discord.Embed(title="You received a gift!", description=gift)
         return embed
 
 
@@ -544,7 +544,7 @@ def receive_gift_embed(user_id: int, raise_if_missing: bool = False) -> discord.
 
         gift = f"""Dear {my_swapuser.name},\n\n{santa_user.gift}\n\nLove, Santa"""
 
-        embed = discord.Embed(title="Your received a gift!", description=gift)
+        embed = discord.Embed(title="You received a gift!", description=gift)
         return embed
 
 
