@@ -631,12 +631,16 @@ def snapshot_database() -> None:
                     "name": swapuser.name,
                     "santa_id": swapuser.santa_id,
                     "giftee_id": swapuser.giftee_id,
-                    "santa_name": user_map[swapuser.santa_id].name
-                    if swapuser.santa_id is not None
-                    else None,
-                    "giftee_name": user_map[swapuser.giftee_id].name
-                    if swapuser.giftee_id is not None
-                    else None,
+                    "santa_name": (
+                        user_map[swapuser.santa_id].name
+                        if swapuser.santa_id is not None
+                        else None
+                    ),
+                    "giftee_name": (
+                        user_map[swapuser.giftee_id].name
+                        if swapuser.giftee_id is not None
+                        else None
+                    ),
                     "letter": swapuser.letter,
                     "gave_gift": swapuser.gift,
                     "letterboxd": swapuser.letterboxd_username,

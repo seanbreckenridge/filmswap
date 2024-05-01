@@ -37,11 +37,9 @@ source ./.venv/bin/activate
 pip install -r ./requirements.txt
 # once all is installed, to run bot
 ./.venv/bin/python -m filmswap run
-
-# deprecated install method
-pipenv install
-pipenv run bot
 ```
+
+The `requirements.txt` is updated by adding something to `requirements.in` and then using `pip-compile >requirements.txt` (`pip install pip-tools` if command is missing)
 
 This runs a swap as a singleton, adding multiple swaps per server was originally supported but it makes the commands a bit more complicated, and I don't think its worth the complication.
 To create a swap, run `/create`, then `/set-channel`, then `/send-join-message` to send a message to the channel to join the swap.

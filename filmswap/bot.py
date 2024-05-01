@@ -382,7 +382,9 @@ def create_bot() -> discord.Client:
         )
 
     @bot.tree.command(name="letterboxd", description="Set your letterboxd username")  # type: ignore[arg-type]
-    async def letterboxd(interaction: discord.Interaction[ClientT], username: str) -> None:
+    async def letterboxd(
+        interaction: discord.Interaction[ClientT], username: str
+    ) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used letterboxd"
         )
@@ -590,7 +592,9 @@ def create_bot() -> discord.Client:
                 logger.info(
                     f"User {message.author.id} {message.author.display_name} sending message to santa {santa.user_id} {santa.name} {message_contents}"
                 )
-                embed = discord.Embed(title="Your giftee sent you a message", description=message_contents)
+                embed = discord.Embed(
+                    title="Your giftee sent you a message", description=message_contents
+                )
                 embed.set_footer(text="To reply, use >write-giftee [text]")
                 await santa_user.send(embed=embed)
 
@@ -649,7 +653,9 @@ def create_bot() -> discord.Client:
                 logger.info(
                     f"User {message.author.id} {message.author.display_name} sending message to giftee {giftee.user_id} {giftee.name} {message_contents}"
                 )
-                embed = discord.Embed(title="Your santa sent you a message", description=message_contents)
+                embed = discord.Embed(
+                    title="Your santa sent you a message", description=message_contents
+                )
                 embed.set_footer(text="To reply, use >write-santa [text]")
                 await giftee_user.send(embed=embed)
                 await message.author.send("Your message has been sent")
