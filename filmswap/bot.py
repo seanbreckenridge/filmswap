@@ -592,6 +592,7 @@ def create_bot() -> discord.Client:
                 )
                 embed = discord.Embed(title="Your giftee sent you a message", description=message_contents)
                 embed.set_footer(text="To reply, use >write-giftee [text]")
+                await santa_user.send(embed=embed)
 
                 await message.author.send("Your message has been sent")
 
