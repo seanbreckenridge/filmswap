@@ -13,9 +13,6 @@ Requires:
 - attach files
 - use slash commands
 - send messages
-
-perhaps for future usage to manage the final thoughts thread:
-
 - create public threads
 - send messages in threads
 
