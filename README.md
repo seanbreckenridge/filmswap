@@ -18,7 +18,7 @@ Requires:
 
 Create an `.env` file with values like:
 
-```
+```c
 SQLITEDB_PATH="filmswap.db"
 SQL_ECHO=0
 GUILD_ID=9243234234
@@ -27,11 +27,18 @@ ENVIRONMENT=prod
 BACKUP_DIR="backups"
 ```
 
-```
+```bash
 git clone https://github.com/seanbreckenridge/filmswap
 cd filmswap
 pyenv install 3.11.3
-pipenv --python ~/.pyenv/versions/3.11.3/bin/python install
+python3 -m virtualenv .venv -p ~/.pyenv/versions/3.11.3/bin/python
+# to develop/work in environment, activate:
+source ./.venv/bin/activate
+pip install -r ./requirements.txt
+# once all is installed, to run bot
+./.venv/bin/python -m filmswap run
+
+# deprecated install method
 pipenv install
 pipenv run bot
 ```
