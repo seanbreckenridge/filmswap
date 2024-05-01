@@ -3,6 +3,7 @@ import asyncio
 import click
 
 from .bot import create_bot
+from .settings import settings
 
 
 @click.group()
@@ -16,9 +17,10 @@ async def _run_main(token: str) -> None:
 
 
 @main.command(short_help="run")
-@click.option("--token", envvar="FILMSWAP_TOKEN", required=True)
-def run(token: str) -> None:
-    asyncio.run(_run_main(token=token))
+def run() -> None:
+    if not settings.FILMSWAP_TOKEN:
+        raise click.ClickException("FILMSWAP_TOKEN is not set")
+    asyncio.run(_run_main(token=settings.FILMSWAP_TOKEN))
 
 
 if __name__ == "__main__":

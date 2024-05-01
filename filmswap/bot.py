@@ -30,6 +30,8 @@ from .settings import settings, Environment
 from .manage import Manage, JoinSwapButton, update_usernames
 from ._types import ClientT
 
+MSG_DESCRIPTION_LIMIT = 4000
+
 
 def help_embed() -> discord.Embed:
     embed = discord.Embed(title="Help", description="Filmswap Help")
@@ -456,7 +458,7 @@ def create_bot() -> discord.Client:
                 set_letter(message.author.id, letter_contents)
             except AssertionError:
                 await message.author.send(
-                    f"Sorry, your letter is too long. It must be less than 1900 characters (it is currently {len(letter_contents)} characters)"
+                    f"Sorry, your letter is too long. It must be less than {MSG_DESCRIPTION_LIMIT} characters (it is currently {len(letter_contents)} characters)"
                 )
                 return
             await message.reply("Your letter has been set, your santa will see:")
@@ -523,7 +525,7 @@ def create_bot() -> discord.Client:
                 set_gift(message.author.id, gift_contents)
             except AssertionError:
                 await message.author.send(
-                    f"Sorry, your gift is too long. It must be less than 1900 characters (it is currently {len(gift_contents)} characters)"
+                    f"Sorry, your gift is too long. It must be less than {MSG_DESCRIPTION_LIMIT} characters (it is currently {len(gift_contents)} characters)"
                 )
                 return
             await message.reply(
@@ -563,12 +565,12 @@ def create_bot() -> discord.Client:
                 )
                 return
 
-            if len(message_contents) > 1900:
+            if len(message_contents) > MSG_DESCRIPTION_LIMIT:
                 logger.info(
                     f"User {message.author.id} tried to send message to santa but their message was too long"
                 )
                 await message.author.send(
-                    f"Sorry, your message is too long. It must be less than 1900 characters (it is currently {len(message_contents)} characters)"
+                    f"Sorry, your message is too long. It must be less than {MSG_DESCRIPTION_LIMIT} characters (it is currently {len(message_contents)} characters)"
                 )
                 return
 
@@ -588,12 +590,8 @@ def create_bot() -> discord.Client:
                 logger.info(
                     f"User {message.author.id} {message.author.display_name} sending message to santa {santa.user_id} {santa.name} {message_contents}"
                 )
-                embed = discord.Embed()
-                embed.add_field(
-                    name="Your giftee sent you a message", value=message_contents
-                )
+                embed = discord.Embed(title="Your giftee sent you a message", description=message_contents)
                 embed.set_footer(text="To reply, use >write-giftee [text]")
-                await santa_user.send(embed=embed)
 
                 await message.author.send("Your message has been sent")
 
@@ -626,12 +624,12 @@ def create_bot() -> discord.Client:
                 )
                 return
 
-            if len(message_contents) > 1900:
+            if len(message_contents) > MSG_DESCRIPTION_LIMIT:
                 logger.info(
                     f"User {message.author.id} tried to send message to giftee but their message was too long"
                 )
                 await message.author.send(
-                    f"Sorry, your message is too long. It must be less than 1900 characters (it is currently {len(message_contents)} characters)"
+                    f"Sorry, your message is too long. It must be less than {MSG_DESCRIPTION_LIMIT} characters (it is currently {len(message_contents)} characters)"
                 )
                 return
 
@@ -650,10 +648,7 @@ def create_bot() -> discord.Client:
                 logger.info(
                     f"User {message.author.id} {message.author.display_name} sending message to giftee {giftee.user_id} {giftee.name} {message_contents}"
                 )
-                embed = discord.Embed()
-                embed.add_field(
-                    name="Your santa sent you a message", value=message_contents
-                )
+                embed = discord.Embed(title="Your santa sent you a message", description=message_contents)
                 embed.set_footer(text="To reply, use >write-santa [text]")
                 await giftee_user.send(embed=embed)
                 await message.author.send("Your message has been sent")

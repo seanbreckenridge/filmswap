@@ -207,10 +207,10 @@ class SwapUser(Base):
     name = Column(String(32), nullable=False)
 
     # letter is what this user in this swap wants to receive from another user
-    letter = Column(String(1900), nullable=True, default=None)
+    letter = Column(String(4000), nullable=True, default=None)
     # gift is what this user in this swap is giving to another user
     # this is NOT the users gift, this is what they've  set what they're giving to another user
-    gift = Column(String(1900), nullable=True, default=None)
+    gift = Column(String(4000), nullable=True, default=None)
 
     # user can mark if they've finished watching, or a mod can do it for them if they post their thoughts
     done_watching = Column(Boolean, nullable=False, default=False)
@@ -359,7 +359,7 @@ def set_letter(user_id: int, letter: str) -> None:
     """
     with Session(engine) as session:  # type: ignore[attr-defined]
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one()
-        assert len(letter) <= 1900, "Letter too long, must be less than 1900 characters"
+        assert len(letter) <= 4000, "Letter too long, must be less than 4000 characters"
         logger.info(f"User {user_id} set their letter to {letter}")
         swap_user.letter = letter
         session.add(swap_user)
@@ -405,7 +405,7 @@ def set_gift(user_id: int, gift: str) -> None:
     """
     with Session(engine) as session:  # type: ignore[attr-defined]
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one()
-        assert len(gift) <= 1900, "Gift too long, must be less than 1900 characters"
+        assert len(gift) <= 4000, "Gift too long, must be less than 4000 characters"
         logger.info(f"User {user_id} set their gift for {swap_user.giftee_id}: {gift}")
         swap_user.gift = gift
         session.add(swap_user)
