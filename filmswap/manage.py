@@ -94,12 +94,6 @@ class JoinSwapButton(discord.ui.View):
         assert isinstance(self._bot, commands.Bot)  # type: ignore
         return self._bot  # type: ignore
 
-    @property
-    def swap_role_id(self) -> int:
-        resp = self.get_bot().filmswap_role_id()  # type: ignore
-        assert isinstance(resp, int)
-        return resp
-
     @discord.ui.button(
         label="Join swap",
         style=discord.ButtonStyle.primary,
@@ -112,23 +106,6 @@ class JoinSwapButton(discord.ui.View):
             f"User {interaction.user.id} {interaction.user.display_name} clicked button to join swap"
         )
 
-        # shared function which is called to give role to user, regardless of whether or not
-        # they actually joined. this is so that they are notified next time, if they tried to join
-        async def _add_role() -> None:
-            if not settings.MODIFY_ROLES:
-                return
-            logger.info(
-                f"Giving user {interaction.user.id} {interaction.user.name} role"
-            )
-            # this has to be done in a server
-            assert interaction.guild is not None
-            assert isinstance(interaction.user, discord.Member)
-
-            # add the film role swap to the user
-            await interaction.user.add_roles(
-                discord.Object(self.swap_role_id), reason="User joined film swap"
-            )
-
         try:
             join_swap(interaction.user.id, interaction.user.display_name)
         except Exception as e:
@@ -136,7 +113,6 @@ class JoinSwapButton(discord.ui.View):
             await interaction.response.send_message(str(e), ephemeral=True)
             # send as a DM as well, ephemeral messages are easy to miss
             await interaction.user.send(str(e))
-            await _add_role()
             self.is_finished()
             return
 
@@ -148,8 +124,6 @@ class JoinSwapButton(discord.ui.View):
             "Joined swap. Check your DMs to set your letter",
             ephemeral=True,
         )
-
-        await _add_role()
 
         self.is_finished()
 
@@ -580,7 +554,7 @@ class Manage(discord.app_commands.Group):
             return
 
     @discord.app_commands.command(  # type: ignore[arg-type]
-        name="filmswap-ban", description="Ban a user from the swap"
+        name="swap-ban", description="Ban a user from the swap"
     )
     async def filmswap_ban(
         self, interaction: discord.Interaction[ClientT], discord_user_id: str
@@ -621,7 +595,7 @@ class Manage(discord.app_commands.Group):
             return
 
     @discord.app_commands.command(  # type: ignore[arg-type]
-        name="filmswap-unban", description="Unban a user from the swap"
+        name="swap-unban", description="Unban a user from the swap"
     )
     async def filmswap_unban(
         self, interaction: discord.Interaction[ClientT], discord_user_id: str
