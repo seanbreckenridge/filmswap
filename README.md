@@ -8,7 +8,6 @@ Run on `python 3.11.3`
 
 Requires:
 
-- manage roles
 - embed links
 - attach files
 - use slash commands
