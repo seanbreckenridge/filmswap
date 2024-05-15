@@ -767,7 +767,7 @@ class Manage(discord.app_commands.Group):
     async def reveal(
         self,
         interaction: discord.Interaction[ClientT],
-        format: Literal["text", "graph"],
+        format: Literal["text", "pretty", "graph"],
         graph_layout: Literal[
             "circle",
             "random",
@@ -814,6 +814,46 @@ class Manage(discord.app_commands.Group):
                 f.write(report.encode("utf-8"))
                 f.seek(0)
                 await interaction.user.send(file=discord.File(f, "report.txt"))
+
+        elif format == "pretty":
+            graph = nx.DiGraph()
+            for user in users_with_both:
+                assert user.giftee_id is not None
+                graph.add_edge(
+                    user.user_id,
+                    user.giftee_id,
+                )
+
+            # in case we had people who joined late, we need to check for multiple
+            # unconnected graphs
+            # iterate through the graph neigbours and create lists of each cycle
+            cycles = list(nx.simple_cycles(graph))
+            assert len(cycles) > 0, "No cycles found in graph"
+
+            results = []
+            for cycle in cycles:
+                names = []
+                assert len(cycle) > 0, "Empty cycle found in graph"
+                # add the first user
+                names.append(id_to_names.get(cycle[0]))
+                for from_user in cycle:
+                    # get the user this was sent to
+                    to_user_list = list(graph.neighbors(from_user))
+                    assert (
+                        len(to_user_list) == 1
+                    ), "More than one neighbour found when generating links"
+                    to_user = id_to_names.get(to_user_list[0])
+                    assert to_user is not None, f"No user found for ID {to_user}"
+                    names.append(to_user)
+                results.append("➜".join([f"`{name}`" for name in names]))
+
+            report = (os.linesep * 2).join(results)
+
+            await interaction.user.send("Copy-Paste this into Discord:")
+            with io.BytesIO() as f:
+                f.write(report.encode("utf-8"))
+                f.seek(0)
+                await interaction.user.send(file=discord.File(f, "pretty.txt"))
 
         else:
             for _ in range(count):
