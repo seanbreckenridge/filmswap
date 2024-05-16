@@ -1,0 +1,118 @@
+# Translations template for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+#  <seanbrecke@gmail.com>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-05-15 17:10-0700\n"
+"PO-Revision-Date: 2024-05-15 16:16-0700\n"
+"Language-Team: English\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: filmswap/bot.py:38
+msgid "Filmswap Help"
+msgstr "Mangaswap Help"
+
+#: filmswap/bot.py:41
+msgid ""
+"Set your letter, which your Santa will see. This should include what kinds "
+"of films you like/dislike, and can include your accounts on letterboxd/imdb "
+"if you have one."
+msgstr ""
+"Set your letter, which your Santa will see. This should include what kinds "
+"of manga you like/dislike, and can include your accounts on MAL/AniList if "
+"you have one."
+
+#: filmswap/bot.py:48
+msgid "Submit your gift/film-recommendation to your giftee"
+msgstr "Submit your gift/manga-recommendation to your giftee"
+
+#: filmswap/bot.py:87
+msgid "/letterboxd"
+msgstr "/letterboxd"
+
+#: filmswap/bot.py:88
+msgid "Set your letterboxd account (this is optional)"
+msgstr "Set your letterboxd account (this is optional)"
+
+#: filmswap/bot.py:98
+msgid "Leave the filmswap, if you're currently in it"
+msgstr "Leave the mangaswap, if you're currently in it"
+
+#: filmswap/bot.py:195
+msgid ""
+"Use `>letter [text]` to set your letter, where [text] is what kinds of films "
+"you like/dislike/want from your santa. If you have a a letterboxd/imdb you "
+"can include that as well"
+msgstr ""
+"Use `>letter [text]` to set your letter, where [text] is what kinds of manga "
+"you like/dislike/want from your santa. If you have a a MAL/AniList you "
+"can include that as well"
+
+#: filmswap/bot.py:270 filmswap/bot.py:514
+msgid ""
+"Use `>submit [text]` to submit your gift, where [text] is your gift/manga "
+"recommendation"
+msgstr ""
+"Use `>submit [text]` to submit your gift, where [text] is your gift/manga "
+"recommendation"
+
+#: filmswap/bot.py:305
+msgid "Leave the film swap"
+msgstr "Leave the manga swap"
+
+#: filmswap/bot.py:314
+msgid ""
+"Please use this command in the server (e.g. in the film-swap channel) "
+"instead of in DMs"
+msgstr ""
+"Please use this command in the server (e.g. in the manga-swap channel) "
+"instead of in DMs"
+
+#: filmswap/bot.py:373
+msgid "letterboxd"
+msgstr "letterboxd"
+
+#: filmswap/bot.py:373
+msgid "Set your letterboxd username"
+msgstr "Set your letterboxd username"
+
+#: filmswap/bot.py:395
+msgid "Your letterboxd username has been set to {username}"
+msgstr "Your letterboxd username has been set to {username}"
+
+#: filmswap/bot.py:445
+msgid ""
+"Use `>letter [text]` to set your letter, where [text] is what kinds of films "
+"you like/dislike/want from your santa. If you have a letterboxd/imdb you can "
+"include that as well"
+msgstr ""
+"Use `>letter [text]` to set your letter, where [text] is what kinds of manga "
+"you like/dislike/want from your santa. If you have a letterboxd/imdb you can "
+"include that as well"
+
+#: filmswap/bot.py:699
+msgid "filmswap-manage"
+msgstr "mangaswap-manage"
+
+#: filmswap/manage.py:121
+msgid ""
+"You've joined the swap. You can now submit a >letter, which should be a "
+"message which tells your santa what kinds of manga you like/dislike, and can "
+"include your accounts on MAL/AniList if you have one."
+msgstr ""
+"You've joined the swap. You can now submit a >letter, which should be a "
+"message which tells your santa what kinds of manga you like/dislike, and can "
+"include your accounts on MAL/AniList if you have one."
+
+#: filmswap/manage.py:541
+msgid "Join the film swap by clicking the button below!"
+msgstr "Join the manga swap by clicking the button below!"

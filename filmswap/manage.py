@@ -17,6 +17,7 @@ from discord.ext import commands
 
 from logzero import logger  # type: ignore[import]
 
+from gettext import gettext as _
 from .settings import settings
 from .db import (
     snapshot_database,
@@ -117,7 +118,7 @@ class JoinSwapButton(discord.ui.View):
             return
 
         await interaction.user.send(
-            "You've joined the swap. You can now submit a >letter, which should be a message which tells your santa what kinds of films you like/dislike, and can include your accounts on letterboxd/imdb if you have one."
+            _("You've joined the swap. You can now submit a >letter, which should be a message which tells your santa what kinds of films you like/dislike, and can include your accounts on letterboxd/imdb if you have one.")
         )
 
         await interaction.response.send_message(
@@ -299,7 +300,7 @@ class Manage(discord.app_commands.Group):
         try:
             Swap.create_swap()
             await interaction.response.send_message(
-                "Created swap. Remember to /filmswap-manage set-channel to set the channel where the swap will take place",
+                "Created swap. Remember to run the 'set-channel' command to set the channel where the swap will take place",
                 ephemeral=True,
             )
         except Exception as e:
@@ -537,7 +538,7 @@ class Manage(discord.app_commands.Group):
             view = JoinSwapButton()
             view._bot = self.get_bot()  # type: ignore
             msg = await channel.send(
-                "Join the film swap by clicking the button below!",
+                _("Join the film swap by clicking the button below!"),
                 view=view,
             )
 
@@ -817,7 +818,7 @@ class Manage(discord.app_commands.Group):
                         len(to_user_list) == 1
                     ), "More than one neighbour found when generating links"
                     to_user = id_to_names.get(to_user_list[0])
-                    assert to_user is not None, f"No user found for ID {to_user}"
+                    assert to_user is not None, f"No user found for ID {to_user_list[0]}"
                     names.append(to_user)
                 results.append("➜".join([f"`{name}`" for name in names]))
 
@@ -830,7 +831,7 @@ class Manage(discord.app_commands.Group):
                 await interaction.user.send(file=discord.File(f, "pretty.txt"))
 
         else:
-            for _ in range(count):
+            for _g in range(count):
                 graph = nx.DiGraph()
                 plt.clf()
                 for user in users_with_both:

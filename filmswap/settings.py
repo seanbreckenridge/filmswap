@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = Environment.DEVELOPMENT
     BACKUP_DIR: str = "backups"
     BOT_NAME: str = "FilmSwap"
+    APP_LOCALE: str = "film"
     PERIOD_POST_HOOK: bool = True
     FILMSWAP_TOKEN: str
     BACKUPS_DIR: str = "backups"

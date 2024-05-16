@@ -1,6 +1,8 @@
 tags*
 *.pdf
 *.db
+*~
+locales/
 report.txt
 reveal.*
 backups/
@@ -59,7 +61,6 @@ coverage.xml
 
 # Translations
 *.mo
-*.pot
 
 # Django stuff:
 *.log

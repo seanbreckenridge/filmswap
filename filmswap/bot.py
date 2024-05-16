@@ -6,6 +6,7 @@ import asyncio
 import discord
 import discord.abc
 from discord.ext import commands
+from gettext import gettext as _
 
 from .db import (
     Swap,
@@ -34,15 +35,17 @@ MSG_DESCRIPTION_LIMIT = 4000
 
 
 def help_embed() -> discord.Embed:
-    embed = discord.Embed(title="Help", description="Filmswap Help")
+    embed = discord.Embed(title="Help", description=_("Filmswap Help"))
     embed.add_field(
         name=">letter",
-        value="Set your letter, which your Santa will see. This should include what kinds of films you like/dislike, and can include your accounts on letterboxd/imdb if you have one.",
+        value=_(
+            "Set your letter, which your Santa will see. This should include what kinds of films you like/dislike, and can include your accounts on letterboxd/imdb if you have one."
+        ),
         inline=False,
     )
     embed.add_field(
         name=">submit",
-        value="Submit your gift/film-recommendation to your giftee",
+        value=_("Submit your gift/film-recommendation to your giftee"),
         inline=False,
     )
     embed.add_field(
@@ -81,8 +84,8 @@ def help_embed() -> discord.Embed:
         inline=True,
     )
     embed.add_field(
-        name="/letterboxd",
-        value="Set your letterboxd account (this is optional)",
+        name=_("/letterboxd"),
+        value=_("Set your letterboxd account (this is optional)"),
         inline=True,
     )
     embed.add_field(
@@ -92,7 +95,7 @@ def help_embed() -> discord.Embed:
     )
     embed.add_field(
         name="/leave",
-        value="Leave the filmswap, if you're currently in it",
+        value=_("Leave the filmswap, if you're currently in it"),
         inline=True,
     )
     return embed
@@ -189,7 +192,9 @@ def create_bot() -> discord.Client:
             return
 
         await interaction.response.send_message(
-            "Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa. If you have a a letterboxd/imdb you can include that as well",
+            _(
+                "Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa. If you have a a letterboxd/imdb you can include that as well"
+            ),
             ephemeral=True,
         )
 
@@ -262,7 +267,9 @@ def create_bot() -> discord.Client:
 
         # prompt the user to set their gift
         await interaction.response.send_message(
-            "Use `>submit [text]` to submit your gift, where [text] is your gift/film recommendation"
+            _(
+                "Use `>submit [text]` to submit your gift, where [text] is your gift/film recommendation"
+            )
         )
 
     @bot.tree.command(name="receive", description="Read the gift from your Santa")  # type: ignore[arg-type]
@@ -295,17 +302,18 @@ def create_bot() -> discord.Client:
         letter = read_giftee_letter(interaction.user.id)
         await interaction.response.send_message(embed=letter, ephemeral=True)
 
-    @bot.tree.command(name="leave", description="Leave the film swap")  # type: ignore[arg-type]
+    @bot.tree.command(name="leave", description=_("Leave the film swap"))  # type: ignore[arg-type]
     async def leave(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used leave"
         )
 
-
         # if user uses this in dm, tell them to use it in the server instead
         if interaction.guild is None:
             await interaction.response.send_message(
-                "Please use this command in the server (e.g. in the film-swap channel) instead of in DMs",
+                _(
+                    "Please use this command in the server (e.g. in the film-swap channel) instead of in DMs"
+                ),
                 ephemeral=True,
             )
             return
@@ -362,7 +370,7 @@ def create_bot() -> discord.Client:
             "Your gift has been marked as watched", ephemeral=True
         )
 
-    @bot.tree.command(name="letterboxd", description="Set your letterboxd username")  # type: ignore[arg-type]
+    @bot.tree.command(name=_("letterboxd"), description=_("Set your letterboxd username"))  # type: ignore[arg-type]
     async def letterboxd(
         interaction: discord.Interaction[ClientT], username: str
     ) -> None:
@@ -384,7 +392,10 @@ def create_bot() -> discord.Client:
             )
 
         await interaction.response.send_message(
-            f"Your letterboxd username has been set to {username}", ephemeral=True
+            _("Your letterboxd username has been set to {username}").format(
+                username=username
+            ),
+            ephemeral=True,
         )
 
     @bot.event
@@ -431,7 +442,9 @@ def create_bot() -> discord.Client:
                     f"User {message.author.id} tried to set letter but didn't provide any text"
                 )
                 await message.author.send(
-                    "Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa. If you have a letterboxd/imdb you can include that as well"
+                    _(
+                        "Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa. If you have a letterboxd/imdb you can include that as well"
+                    ),
                 )
                 return
 
@@ -498,7 +511,7 @@ def create_bot() -> discord.Client:
                     f"User {message.author.id} tried to set gift but didn't provide any text"
                 )
                 await message.author.send(
-                    "Use `>submit [text]` to submit your gift, where [text] is your gift/film recommendation"
+                    _("Use `>submit [text]` to submit your gift, where [text] is your gift/film recommendation"),
                 )
                 return
 
@@ -683,7 +696,7 @@ def create_bot() -> discord.Client:
             )
             return
 
-        manager = Manage(name="filmswap-manage", description="Manage swaps")
+        manager = Manage(name=_("filmswap-manage"), description="Manage swaps")
         manager._bot = bot  # type: ignore
 
         os.makedirs(settings.BACKUP_DIR, exist_ok=True)

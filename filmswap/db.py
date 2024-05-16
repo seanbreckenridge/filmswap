@@ -150,7 +150,7 @@ class Swap(Base):
                 logger.info("Running db logic for SWAP period")
                 if swap.swap_channel_discord_id is None:
                     raise RuntimeError(
-                        "Cannot set swap period to swap without a swap channel, run '/filmswap-manage set-channel' command"
+                        "Cannot set swap period to swap without a swap channel, run the 'set-channel' command"
                     )
                 try:
                     Swap.match_users()
