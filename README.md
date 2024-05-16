@@ -10,7 +10,6 @@ This uses the secret santa verbeage as its familiar. So, you basically set a 'le
 
 ![2024-05-15--14_37_14](https://github.com/seanbreckenridge/filmswap/assets/7804791/526edaf0-bd70-472a-8634-7ac5b672cc83)
 
-
 ## Installation
 
 Run on `python 3.11.3`
@@ -91,7 +90,7 @@ make clean
 make
 cp ./messages/reference.pot ./messages/books.pot
 # whenever there are changes made in code that adds new strings
-# that need to be localized, you can run this command to merge: 
+# that need to be localized, you can run this command to merge:
 msgmerge -U ./messages/books.pot ./messages/reference.pot
 # and then to compile it into a binary file that gets loaded at runtime:
 pybabel compile -i ./messages/books.pot -o ./locales/en_US/LC_MESSAGES/books.mo

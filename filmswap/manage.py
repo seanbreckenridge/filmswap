@@ -750,7 +750,7 @@ class Manage(discord.app_commands.Group):
             "spring",
             "spectral",
             "randomize",  # as in, pick a random layout, don't use the "random" layout
-        ] = "spring",
+        ] = "spectral",
         count: int = 1,
     ) -> None:
         logger.info(f"User {interaction.user.id} revealing connections -- {format}")

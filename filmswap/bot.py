@@ -511,7 +511,9 @@ def create_bot() -> discord.Client:
                     f"User {message.author.id} tried to set gift but didn't provide any text"
                 )
                 await message.author.send(
-                    _("Use `>submit [text]` to submit your gift, where [text] is your gift/film recommendation"),
+                    _(
+                        "Use `>submit [text]` to submit your gift, where [text] is your gift/film recommendation"
+                    ),
                 )
                 return
 
