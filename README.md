@@ -85,10 +85,10 @@ cp ./messages/reference.pot ./messages/books.pot
 # that need to be localized, you can run this command to merge: 
 msgmerge -U ./messages/books.pot ./messages/reference.pot
 # and then to compile it into a binary file that gets loaded at runtime:
-pybabel compile -i ./messages/manga.pot
+pybabel compile -i ./messages/books.pot -o ./locales/en_US/LC_MESSAGES/books.mo
 ```
 
-In code, strings that can be translated are marked like `_("Filmswap Help")`. The `_` is an alias to the stdlib [`gettext.gettext`](https://docs.python.org/3/library/gettext.html) function
+In code, strings that can be translated are marked like `_("Filmswap Help")`. The `_` is an alias to the stdlib [`gettext.gettext`](https://docs.python.org/3/library/gettext.html) function. If something should be localized but isn't, feel free to create an Issue/PR.
 
 After modifying any of the `./messages` file, run `make` in the root directory to update the generated `./locales` binary files. Those are then loaded when the bot starts.
 
