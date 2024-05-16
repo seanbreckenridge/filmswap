@@ -35,7 +35,10 @@ python3 -m virtualenv .venv -p ~/.pyenv/versions/3.11.3/bin/python
 # to develop/work in environment, activate:
 source ./.venv/bin/activate
 pip install -r ./requirements.txt
-# once all is installed, to run bot
+# once all is installed:
+# generate locales if necessary:
+make
+# run the bot
 ./.venv/bin/python -m filmswap run
 ```
 
@@ -71,7 +74,7 @@ This uses `gettext` to allow strings in the application to be localized, so this
 
 To set the language, set the `APP_LOCALE` in your `.env` file, e.g., `APP_LOCALE="manga"`
 
-See the [`./Makefile`](./Makefile) for commands that get run, but basically to add a new type, you'd do:
+See the [`Makefile`](./Makefile) for commands that get run, but basically to add a new type, you'd do:
 
 ```bash
 pip install babel
@@ -87,7 +90,7 @@ pybabel compile -i ./messages/manga.pot
 
 In code, strings that can be translated are marked like `_("Filmswap Help")`. The `_` is an alias to the stdlib [`gettext.gettext`](https://docs.python.org/3/library/gettext.html) function
 
-After modifying any of the ./messages` file, run `make` in the root directory to update the generated `./locales` binary files. Those are then loaded when the bot starts.
+After modifying any of the `./messages` file, run `make` in the root directory to update the generated `./locales` binary files. Those are then loaded when the bot starts.
 
 Troubleshooting:
 
