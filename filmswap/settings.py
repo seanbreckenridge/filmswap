@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     PERIOD_POST_HOOK: bool = True
     FILMSWAP_TOKEN: str
     BACKUPS_DIR: str = "backups"
+    # can set these to empty strings to disable
+    PRESENCE_TYPE: str = "watching"
+    PRESENCE_STATUS: str = "kino, using /help"
 
     class Config:
         case_sensitive = False

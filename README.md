@@ -33,6 +33,8 @@ ALLOWED_ROLES='["filmswap-mod", "Chat Moderators"]'
 ENVIRONMENT=prod
 BACKUP_DIR="backups"
 APP_LOCALE="film"
+PRESENCE_TYPE="watching"
+PRESENCE_STATUS="kino, using /help"
 ```
 
 ```bash

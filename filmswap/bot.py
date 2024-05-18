@@ -116,9 +116,18 @@ async def background_tasks(bot: discord.Client) -> None:
 def create_bot() -> discord.Client:
     intents = discord.Intents.default()
     intents.members = True
-    activity = discord.Activity(
-        type=discord.ActivityType.watching, name="kino, using /help"
-    )
+
+    activity = None
+    if settings.PRESENCE_TYPE.strip() and settings.PRESENCE_STATUS.strip():
+        try:
+            act_type = getattr(discord.ActivityType, settings.PRESENCE_TYPE)
+        except AttributeError:
+            logger.error(
+                f"Invalid presence type {settings.PRESENCE_TYPE}, options:{list(discord.ActivityType.__members__)}"
+            )
+            raise SystemExit(1)
+
+        activity = discord.Activity(type=act_type, name=settings.PRESENCE_STATUS)
     bot = commands.Bot(
         command_prefix=commands.when_mentioned, intents=intents, activity=activity
     )

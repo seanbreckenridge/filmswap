@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -e
+
+BASE_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")"/..)"
+cd "${BASE_DIR}" || exit $?
+
+if [[ ! -e '.venv' ]]; then
+	if [[ -n "$1" ]]; then
+		python_ver="$1"
+	else
+		python_ver="$(command -v python3)"
+		found_pyenv="$(pyenv versions --bare | grep '^3.11' -m 1)" || true
+		[[ -n "$found_pyenv" ]] && python_ver="$(pyenv root)/versions/$found_pyenv/bin/python"
+	fi
+	python3 -m virtualenv .venv -p "$python_ver"
+fi
+
+.venv/bin/python -m pip install -r ./requirements.txt
