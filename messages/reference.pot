@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-05-16 13:36-0700\n"
+"POT-Creation-Date: 2024-05-29 22:01-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,49 +44,49 @@ msgstr ""
 msgid "Leave the filmswap, if you're currently in it"
 msgstr ""
 
-#: filmswap/bot.py:195
+#: filmswap/bot.py:204
 msgid ""
 "Use `>letter [text]` to set your letter, where [text] is what kinds of "
 "films you like/dislike/want from your santa. If you have a a "
 "letterboxd/imdb you can include that as well"
 msgstr ""
 
-#: filmswap/bot.py:270 filmswap/bot.py:514
+#: filmswap/bot.py:279 filmswap/bot.py:523
 msgid ""
 "Use `>submit [text]` to submit your gift, where [text] is your gift/film "
 "recommendation"
 msgstr ""
 
-#: filmswap/bot.py:305
+#: filmswap/bot.py:314
 msgid "Leave the film swap"
 msgstr ""
 
-#: filmswap/bot.py:314
+#: filmswap/bot.py:323
 msgid ""
 "Please use this command in the server (e.g. in the film-swap channel) "
 "instead of in DMs"
 msgstr ""
 
-#: filmswap/bot.py:373
+#: filmswap/bot.py:382
 msgid "letterboxd"
 msgstr ""
 
-#: filmswap/bot.py:373
+#: filmswap/bot.py:382
 msgid "Set your letterboxd username"
 msgstr ""
 
-#: filmswap/bot.py:395
+#: filmswap/bot.py:404
 msgid "Your letterboxd username has been set to {username}"
 msgstr ""
 
-#: filmswap/bot.py:445
+#: filmswap/bot.py:454
 msgid ""
 "Use `>letter [text]` to set your letter, where [text] is what kinds of "
 "films you like/dislike/want from your santa. If you have a "
 "letterboxd/imdb you can include that as well"
 msgstr ""
 
-#: filmswap/bot.py:701
+#: filmswap/bot.py:710
 msgid "filmswap-manage"
 msgstr ""
 
@@ -97,7 +97,7 @@ msgid ""
 "can include your accounts on letterboxd/imdb if you have one."
 msgstr ""
 
-#: filmswap/manage.py:541
+#: filmswap/manage.py:543
 msgid "Join the film swap by clicking the button below!"
 msgstr ""
 

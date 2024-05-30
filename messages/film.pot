@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-05-16 13:36-0700\n"
+"POT-Creation-Date: 2024-05-29 22:01-0700\n"
 "PO-Revision-Date: 2024-05-15 16:16-0700\n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -47,7 +47,7 @@ msgstr "Set your letterboxd account (this is optional)"
 msgid "Leave the filmswap, if you're currently in it"
 msgstr "Leave the filmswap, if you're currently in it"
 
-#: filmswap/bot.py:195
+#: filmswap/bot.py:204
 msgid ""
 "Use `>letter [text]` to set your letter, where [text] is what kinds of films "
 "you like/dislike/want from your santa. If you have a a letterboxd/imdb you "
@@ -57,7 +57,7 @@ msgstr ""
 "you like/dislike/want from your santa. If you have a a letterboxd/imdb you "
 "can include that as well"
 
-#: filmswap/bot.py:270 filmswap/bot.py:514
+#: filmswap/bot.py:279 filmswap/bot.py:523
 msgid ""
 "Use `>submit [text]` to submit your gift, where [text] is your gift/film "
 "recommendation"
@@ -65,11 +65,11 @@ msgstr ""
 "Use `>submit [text]` to submit your gift, where [text] is your gift/film "
 "recommendation"
 
-#: filmswap/bot.py:305
+#: filmswap/bot.py:314
 msgid "Leave the film swap"
 msgstr "Leave the film swap"
 
-#: filmswap/bot.py:314
+#: filmswap/bot.py:323
 msgid ""
 "Please use this command in the server (e.g. in the film-swap channel) "
 "instead of in DMs"
@@ -77,19 +77,19 @@ msgstr ""
 "Please use this command in the server (e.g. in the film-swap channel) "
 "instead of in DMs"
 
-#: filmswap/bot.py:373
+#: filmswap/bot.py:382
 msgid "letterboxd"
 msgstr "letterboxd"
 
-#: filmswap/bot.py:373
+#: filmswap/bot.py:382
 msgid "Set your letterboxd username"
 msgstr "Set your letterboxd username"
 
-#: filmswap/bot.py:395
+#: filmswap/bot.py:404
 msgid "Your letterboxd username has been set to {username}"
 msgstr "Your letterboxd username has been set to {username}"
 
-#: filmswap/bot.py:445
+#: filmswap/bot.py:454
 msgid ""
 "Use `>letter [text]` to set your letter, where [text] is what kinds of films "
 "you like/dislike/want from your santa. If you have a letterboxd/imdb you can "
@@ -99,7 +99,7 @@ msgstr ""
 "you like/dislike/want from your santa. If you have a letterboxd/imdb you can "
 "include that as well"
 
-#: filmswap/bot.py:701
+#: filmswap/bot.py:710
 msgid "filmswap-manage"
 msgstr "filmswap-manage"
 
@@ -113,6 +113,6 @@ msgstr ""
 "message which tells your santa what kinds of films you like/dislike, and can "
 "include your accounts on letterboxd/imdb if you have one."
 
-#: filmswap/manage.py:541
+#: filmswap/manage.py:543
 msgid "Join the film swap by clicking the button below!"
 msgstr ""

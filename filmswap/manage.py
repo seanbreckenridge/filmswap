@@ -118,7 +118,9 @@ class JoinSwapButton(discord.ui.View):
             return
 
         await interaction.user.send(
-            _("You've joined the swap. You can now submit a >letter, which should be a message which tells your santa what kinds of films you like/dislike, and can include your accounts on letterboxd/imdb if you have one.")
+            _(
+                "You've joined the swap. You can now submit a >letter, which should be a message which tells your santa what kinds of films you like/dislike, and can include your accounts on letterboxd/imdb if you have one."
+            )
         )
 
         await interaction.response.send_message(
@@ -818,7 +820,9 @@ class Manage(discord.app_commands.Group):
                         len(to_user_list) == 1
                     ), "More than one neighbour found when generating links"
                     to_user = id_to_names.get(to_user_list[0])
-                    assert to_user is not None, f"No user found for ID {to_user_list[0]}"
+                    assert (
+                        to_user is not None
+                    ), f"No user found for ID {to_user_list[0]}"
                     names.append(to_user)
                 results.append("➜".join([f"`{name}`" for name in names]))
 
