@@ -943,7 +943,7 @@ class Manage(discord.app_commands.Group):
 
         # send message that starts thread
         msg = await channel.send(
-            f"Created thread: {name}. Post your thoughts for this month in this thread!"
+            f"Created thread: {name}. Once you've watched your film(s), run `/done-watching` and post your thoughts for this month here!"
         )
         thread = await channel.create_thread(
             name=name,
