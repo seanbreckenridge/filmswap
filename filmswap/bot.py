@@ -53,11 +53,13 @@ def help_embed() -> discord.Embed:
         value="Read your letter from your giftee. After you picked something, >submit",
         inline=False,
     )
+    # fmt: off
     embed.add_field(
         name="/receive",
-        value="Read your gift from your Santa. After you've finished watching, /done-watching",
+        value=_("Read your gift from your Santa. After you've finished watching, /done-watching"),
         inline=False,
     )
+    # fmt: on
     embed.add_field(
         name="/review-letter",
         value="Review your current letter",
@@ -79,8 +81,8 @@ def help_embed() -> discord.Embed:
         inline=True,
     )
     embed.add_field(
-        name="/done-watching",
-        value="Mark your gift as watched",
+        name=_("/done-watching"),
+        value=_("Mark your gift as watched"),
         inline=True,
     )
     embed.add_field(
@@ -201,9 +203,9 @@ def create_bot() -> discord.Client:
             return
 
         await interaction.response.send_message(
-            _(
-                "Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa. If you have a a letterboxd/imdb you can include that as well"
-            ),
+            # fmt: off
+            _("Use `>letter [text]` to set your letter, where [text] is what kinds of films you like/dislike/want from your santa. If you have a a letterboxd/imdb you can include that as well"),
+            # fmt: on
             ephemeral=True,
         )
 
@@ -349,7 +351,7 @@ def create_bot() -> discord.Client:
             ephemeral=True,
         )
 
-    @bot.tree.command(name="done-watching", description="Mark your gift as watched")  # type: ignore[arg-type]
+    @bot.tree.command(name=_("done-watching"), description=_("Mark your gift as watched"))  # type: ignore[arg-type]
     async def done_watching(interaction: discord.Interaction[ClientT]) -> None:
         logger.info(
             f"User {interaction.user.id} {interaction.user.display_name} used done-watching"
@@ -363,7 +365,9 @@ def create_bot() -> discord.Client:
                 f"User {interaction.user.id} {interaction.user.display_name} tried to mark their gift as watched during the JOIN period"
             )
             await interaction.response.send_message(
-                "Can't set your gift as watched right now. Wait till the swap begins",
+                # fmt: off
+                _("Can't set your gift as watched right now. Wait till the swap begins"),
+                # fmt: on
                 ephemeral=True,
             )
             return
@@ -376,7 +380,7 @@ def create_bot() -> discord.Client:
             )
 
         await interaction.response.send_message(
-            "Your gift has been marked as watched", ephemeral=True
+            _("Your gift has been marked as watched"), ephemeral=True
         )
 
     @bot.tree.command(name=_("letterboxd"), description=_("Set your letterboxd username"))  # type: ignore[arg-type]

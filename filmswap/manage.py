@@ -941,10 +941,11 @@ class Manage(discord.app_commands.Group):
                 )
                 return
 
+        # fmt: off
+        epilogue = _("Once you've watched your film(s), run `/done-watching` and post your thoughts for this month here!")
+        # fmt: on
         # send message that starts thread
-        msg = await channel.send(
-            f"Created thread: {name}. Once you've watched your film(s), run `/done-watching` and post your thoughts for this month here!"
-        )
+        msg = await channel.send(f"Created thread: {name}. {epilogue}")
         thread = await channel.create_thread(
             name=name,
             auto_archive_duration=10080,

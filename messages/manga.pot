@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-05-29 22:01-0700\n"
+"POT-Creation-Date: 2024-06-07 23:13-0700\n"
 "PO-Revision-Date: 2024-05-15 16:16-0700\n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -35,19 +35,34 @@ msgstr ""
 msgid "Submit your gift/film-recommendation to your giftee"
 msgstr "Submit your gift/manga-recommendation to your giftee"
 
-#: filmswap/bot.py:87
+#: filmswap/bot.py:59
+msgid ""
+"Read your gift from your Santa. After you've finished watching, /done-"
+"watching"
+msgstr ""
+"Read your gift from your Santa. After you've finished reading, /done-reading"
+
+#: filmswap/bot.py:84
+msgid "/done-watching"
+msgstr "/done-reading"
+
+#: filmswap/bot.py:85 filmswap/bot.py:354
+msgid "Mark your gift as watched"
+msgstr "Mark your gift as read"
+
+#: filmswap/bot.py:89
 msgid "/letterboxd"
 msgstr "/letterboxd"
 
-#: filmswap/bot.py:88
+#: filmswap/bot.py:90
 msgid "Set your letterboxd account (this is optional)"
 msgstr "Set your letterboxd account (this is optional)"
 
-#: filmswap/bot.py:98
+#: filmswap/bot.py:100
 msgid "Leave the filmswap, if you're currently in it"
 msgstr "Leave the mangaswap, if you're currently in it"
 
-#: filmswap/bot.py:204
+#: filmswap/bot.py:207
 msgid ""
 "Use `>letter [text]` to set your letter, where [text] is what kinds of films "
 "you like/dislike/want from your santa. If you have a a letterboxd/imdb you "
@@ -57,7 +72,7 @@ msgstr ""
 "you like/dislike/want from your santa. If you have a a MAL/AniList you can "
 "include that as well"
 
-#: filmswap/bot.py:279 filmswap/bot.py:523
+#: filmswap/bot.py:281 filmswap/bot.py:527
 msgid ""
 "Use `>submit [text]` to submit your gift, where [text] is your gift/film "
 "recommendation"
@@ -65,11 +80,11 @@ msgstr ""
 "Use `>submit [text]` to submit your gift, where [text] is your gift/manga "
 "recommendation"
 
-#: filmswap/bot.py:314
+#: filmswap/bot.py:316
 msgid "Leave the film swap"
 msgstr "Leave the manga swap"
 
-#: filmswap/bot.py:323
+#: filmswap/bot.py:325
 msgid ""
 "Please use this command in the server (e.g. in the film-swap channel) "
 "instead of in DMs"
@@ -77,19 +92,31 @@ msgstr ""
 "Please use this command in the server (e.g. in the manga-swap channel) "
 "instead of in DMs"
 
-#: filmswap/bot.py:382
+#: filmswap/bot.py:354
+msgid "done-watching"
+msgstr "done-reading"
+
+#: filmswap/bot.py:369
+msgid "Can't set your gift as watched right now. Wait till the swap begins"
+msgstr "Can't set your gift as read right now. Wait till the swap begins"
+
+#: filmswap/bot.py:383
+msgid "Your gift has been marked as watched"
+msgstr "Your gift has been marked as read"
+
+#: filmswap/bot.py:386
 msgid "letterboxd"
 msgstr "letterboxd"
 
-#: filmswap/bot.py:382
+#: filmswap/bot.py:386
 msgid "Set your letterboxd username"
 msgstr "Set your letterboxd username"
 
-#: filmswap/bot.py:404
+#: filmswap/bot.py:408
 msgid "Your letterboxd username has been set to {username}"
 msgstr "Your letterboxd username has been set to {username}"
 
-#: filmswap/bot.py:454
+#: filmswap/bot.py:458
 msgid ""
 "Use `>letter [text]` to set your letter, where [text] is what kinds of films "
 "you like/dislike/want from your santa. If you have a letterboxd/imdb you can "
@@ -99,7 +126,7 @@ msgstr ""
 "you like/dislike/want from your santa. If you have a letterboxd/imdb you can "
 "include that as well"
 
-#: filmswap/bot.py:710
+#: filmswap/bot.py:714
 msgid "filmswap-manage"
 msgstr "mangaswap-manage"
 
@@ -116,3 +143,9 @@ msgstr ""
 #: filmswap/manage.py:543
 msgid "Join the film swap by clicking the button below!"
 msgstr "Join the manga swap by clicking the button below!"
+
+#: filmswap/manage.py:945
+msgid ""
+"Once you've watched your film(s), run `/done-watching` and post your "
+"thoughts for this month here!"
+msgstr "Once you've read your manga(s), run `/done-reading` and post your thoughts for this month here!"
