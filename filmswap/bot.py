@@ -255,6 +255,9 @@ def create_bot() -> discord.Client:
             f"User {interaction.user.id} {interaction.user.display_name} viewing their own gift (the one they submitted)"
         )
 
+        if await error_if_not_in_dm(interaction):
+            return
+
         if await not_active_user(interaction):
             return
 
@@ -329,6 +332,9 @@ def create_bot() -> discord.Client:
             )
             return
 
+        if await not_active_user(interaction):
+            return
+
         if Swap.get_swap_period() != SwapPeriod.JOIN:
             logger.info(
                 f"User {interaction.user.id} {interaction.user.display_name} tried to leave the swap but it's not the JOIN period"
@@ -358,6 +364,9 @@ def create_bot() -> discord.Client:
         )
 
         if await error_if_not_in_dm(interaction):
+            return
+
+        if await not_active_user(interaction):
             return
 
         if Swap.get_swap_period() == SwapPeriod.JOIN:
