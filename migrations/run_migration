@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Ideally this could run all migrations and it be idempotent
+# but that would require maintaining basically a hash that goes along
+# with each migration (this is basically what alembic does)
+#
+# I could create some custom caching system but for now
+# this just requires the user run a migraiton manually when
+# the schema changes. bleh.
+
+THIS_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+cd "${THIS_DIR}/.." || exit $?
+
+havecmd() {
+	local BINARY ERRMSG
+	BINARY="${1:?Must provide command to check}"
+	# the command is on the users $PATH, exit with success
+	if command -v "${BINARY}" >/dev/null 2>&1; then
+		return 0
+	else
+		# construct error message
+		ERRMSG="requires '${BINARY}', could not find that on your \$PATH"
+		[[ -n "$2" ]] && ERRMSG="${ERRMSG}. $2"
+		printf '%s\n' "${ERRMSG}" 1>&2
+		return 1
+	fi
+}
+
+havecmd fzf || exit $?
+
+pick_migration() {
+	find ./migrations -name '*.sql' | fzf || return $?
+}
+
+migration="$(pick_migration)" || exit $?
+sqlite3 filmswap.db <"$migration" || true

@@ -78,6 +78,10 @@ mv ./backups/1712699606.sqlite ./filmswap.db  # replace database with the newest
 # restart bot
 ```
 
+## Migrations
+
+This doesn't support an ORM or complex migration tool, it just uses SQLite files that you have to run against the database when things change. If you recently set up the bot you don't have to run any migrations, if there are ones added recently in ./migrations/ then you can use the ./migrations/run_migration script to run it against your database (would recommend making a backup first)
+
 ## Localization
 
 This uses `gettext` to allow strings in the application to be localized, so this could be used for something other than films (e.g. manga, books etc.)
@@ -104,5 +108,5 @@ After modifying any of the `./messages` file, run `make` in the root directory t
 
 Troubleshooting:
 
-- If the `./reference.pot` file doesnt seem to be being generated, try `make clean && touch ./filmswap/__init__.py && make`
+- If the `./reference.pot` file doesn't seem to be being generated, try `make clean && touch ./filmswap/__init__.py && make`
 - You should be modifying the `msgstr` to the translated value, see [`messages/manga.pot`](./messages/manga.pot) as an example

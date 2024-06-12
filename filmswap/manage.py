@@ -803,7 +803,7 @@ class Manage(discord.app_commands.Group):
 
             # in case we had people who joined late, we need to check for multiple
             # unconnected graphs
-            # iterate through the graph neigbours and create lists of each cycle
+            # iterate through the graph neighbours and create lists of each cycle
             cycles = list(nx.simple_cycles(graph))
             assert len(cycles) > 0, "No cycles found in graph"
 

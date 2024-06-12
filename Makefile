@@ -1,5 +1,5 @@
 # to use these 'pip install babel'
-# hmm, some weirdness going on with modtimes, but it biulds good-enough
+# hmm, some weirdness going on with modtimes, but it builds good-enough
 # if stuff breaks and it doent seem to be building, just make clean && make
 
 SOURCE_FILES := $(shell find ./filmswap -type f -iname '*.py')
