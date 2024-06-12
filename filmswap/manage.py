@@ -635,8 +635,11 @@ class Manage(discord.app_commands.Group):
             f"Unbanned {user_id} from the swap", ephemeral=True
         )
 
+    _set_done_cmd_name = _("set-user-done-watching")
+    _set_done_desc = _("Set /done-watching for a user")
+
     @discord.app_commands.command(  # type: ignore[arg-type]
-        name="set-user-done-watching", description="Set /done-watching for a user"
+        name=_set_done_cmd_name, description=_set_done_desc
     )
     async def set_watching(
         self,

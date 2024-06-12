@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-06-12 12:56-0700\n"
+"POT-Creation-Date: 2024-06-12 13:42-0700\n"
 "PO-Revision-Date: 2024-05-15 16:16-0700\n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -144,7 +144,16 @@ msgstr ""
 msgid "Join the film swap by clicking the button below!"
 msgstr "Join the manga swap by clicking the button below!"
 
-#: filmswap/manage.py:951
+#: filmswap/manage.py:638
+msgid "set-user-done-watching"
+msgstr "set-user-done-reading"
+
+#: filmswap/manage.py:639
+#, fuzzy
+msgid "Set /done-watching for a user"
+msgstr "Set /done-reading for a user"
+
+#: filmswap/manage.py:954
 msgid ""
 "Once you've watched your film(s), run `/done-watching` and post your "
 "thoughts for this month here!"
