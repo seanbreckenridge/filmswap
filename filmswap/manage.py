@@ -32,6 +32,7 @@ from .db import (
     ban_user,
     unban_user,
     join_swap,
+    restore_letter,
     set_gift_done,
     engine,
     SwapUser,
@@ -122,6 +123,11 @@ class JoinSwapButton(discord.ui.View):
                 "You've joined the swap. You can now submit a >letter, which should be a message which tells your santa what kinds of films you like/dislike, and can include your accounts on letterboxd/imdb if you have one."
             )
         )
+
+        if restore_letter(interaction.user.id):
+            await interaction.user.send(
+                "Your old letter has been restored, you can use `/review-letter` to read it, or >letter to update it"
+            )
 
         await interaction.response.send_message(
             "Joined swap. Check your DMs to set your letter",

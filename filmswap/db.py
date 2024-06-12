@@ -17,6 +17,8 @@ from sqlalchemy import (
     Enum,
 )
 from sqlite_backup.core import sqlite_backup
+from sqlalchemy.sql import func
+from sqlalchemy import DateTime
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.ext.declarative import declarative_base
@@ -223,6 +225,52 @@ class SwapUser(Base):
     letterboxd_username = Column(String(64), nullable=True, default=None)
 
 
+class LetterBackup(Base):
+    __tablename__ = "letter_backup"
+
+    user_id = Column(Integer, primary_key=True)
+    letter = Column(String(4000), nullable=True)
+
+    updated_at = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+def set_backup_letter(user_id: int, letter: str) -> None:
+    if not isinstance(letter, str):
+        logger.warning(
+            f"Tried to set backup letter for {user_id} with a non-str value {letter} {type(letter)}"
+        )
+        return
+    logger.info(f"Adding backup letter for {user_id}")
+    with Session(engine) as session:  # type: ignore[attr-defined]
+        # just delete and re-add
+        session.query(LetterBackup).filter_by(user_id=user_id).delete()
+        session.add(LetterBackup(user_id=user_id, letter=letter))
+        session.commit()
+
+
+def backup_all_letters() -> None:
+    logger.info("Backing up letters...")
+    with Session(engine) as session:  # type: ignore[attr-defined]
+        users = [u for u in session.query(SwapUser) if u.letter is not None]
+        backups = {ltr.user_id: ltr.letter for ltr in session.query(LetterBackup).all()}
+        for u in users:
+            if not u.letter:
+                continue
+            if u.user_id in backups:
+                if u.letter == backups[u.user_id]:
+                    continue
+                logger.info(f"Updating backup letter for {u.user_id}")
+                session.query(LetterBackup).filter_by(user_id=u.user_id).update(
+                    {"letter": u.letter}
+                )
+            else:
+                logger.info(f"Adding backup letter for {u.user_id}")
+                session.add(LetterBackup(user_id=u.user_id, letter=u.letter))
+        session.commit()
+
+
 class Banned(Base):
     __tablename__ = "banned"
 
@@ -340,6 +388,28 @@ def join_swap(user_id: int, name: str) -> None:
         session.commit()
 
 
+def restore_letter(user_id: int) -> bool:
+    with Session(engine) as session:  # type: ignore[attr-defined]
+        user = session.query(SwapUser).filter_by(user_id=user_id).one()
+        if user.letter is not None:
+            logger.info(
+                f"While trying to restore letter, user {user_id} {user.name} already has one"
+            )
+            return False
+        backup = session.query(LetterBackup).filter_by(user_id=user_id).one_or_none()
+        if backup is None or backup.letter is None:
+            logger.info(
+                f"While trying to restore letter for {user_id} {user.name}, no backup found"
+            )
+            return False
+        logger.info(f"Restoring old letter for user {user_id}")
+        session.query(SwapUser).filter_by(user_id=user_id).update(
+            values={"letter": backup.letter}
+        )
+        session.commit()
+        return True
+
+
 def leave_swap(user_id: int) -> None:
     with Session(engine) as session:  # type: ignore[attr-defined]
         swap_user = session.query(SwapUser).filter_by(user_id=user_id).one_or_none()
@@ -364,6 +434,7 @@ def set_letter(user_id: int, letter: str) -> None:
         swap_user.letter = letter
         session.add(swap_user)
         session.commit()
+    set_backup_letter(user_id, letter)
 
 
 def has_giftee(user_id: int) -> bool:
@@ -565,7 +636,7 @@ def read_giftee_letter(user_id: int) -> discord.Embed:
 
         if giftee_user.letter is None:
             logger.info(
-                f"User {user_id} tried to read their giftee's letter, but their giftee {giftee_user.id} {giftee_user.name} hasn't set it yet"
+                f"User {user_id} tried to read their giftee's letter, but their giftee {giftee_user.user_id} {giftee_user.name} hasn't set it yet"
             )
             return discord.Embed(
                 title="Your giftee hasn't set their letter yet!",

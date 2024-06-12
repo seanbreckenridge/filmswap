@@ -23,6 +23,7 @@ from .db import (
     user_has_letter,
     has_set_gift,
     set_gift_done,
+    backup_all_letters,
     set_letter,
     leave_swap,
     has_giftee,
@@ -737,6 +738,7 @@ def create_bot() -> discord.Client:
 
         await bot.tree.sync()
 
+        backup_all_letters()
         logger.info("Starting background tasks...")
         bot.loop.create_task(background_tasks(bot))
 
