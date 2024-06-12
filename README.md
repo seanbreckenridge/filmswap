@@ -102,6 +102,15 @@ msgmerge -U ./messages/books.pot ./messages/reference.pot
 pybabel compile -i ./messages/books.pot -o ./locales/en_US/LC_MESSAGES/books.mo
 ```
 
+Make sure you have one of these set:
+
+- `LANGUAGE`
+- `LC_ALL`
+- `LC_MESSAGES`
+- `LANG`
+
+to something like `en_US` or `en_US.UTF-8`
+
 In code, strings that can be translated are marked like `_("Filmswap Help")`. The `_` is an alias to the stdlib [`gettext.gettext`](https://docs.python.org/3/library/gettext.html) function. If something should be localized but isn't, feel free to create an Issue/PR.
 
 After modifying any of the `./messages` file, run `make` in the root directory to update the generated `./locales` binary files. Those are then loaded when the bot starts.
