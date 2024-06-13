@@ -10,6 +10,7 @@ if [[ ! -e '.venv' ]]; then
 		python_ver="$1"
 	else
 		python_ver="$(command -v python3)"
+		echo 'Trying to find pyenv 3.11 version...' 2>&1
 		found_pyenv="$(pyenv versions --bare | grep '^3.11' -m 1)" || true
 		[[ -n "$found_pyenv" ]] && python_ver="$(pyenv root)/versions/$found_pyenv/bin/python"
 	fi

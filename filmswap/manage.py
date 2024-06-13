@@ -980,18 +980,19 @@ class Manage(discord.app_commands.Group):
         today = datetime.date.today()
         month = today.month
         year = today.year
+        next_year = year
 
         # wrap around december to january
         next_month = month + 1
         if next_month == 13:
             next_month = 1
-            year += 1
+            next_year += 1
 
         month_str = calendar.month_name[month]
         next_month_str = calendar.month_name[next_month]
 
         choices: list[str] = [
-            f"Final Thoughts ({month_str}-{next_month_str} {year})",
+            f"Final Thoughts ({month_str}-{next_month_str} {next_year})",
             f"Final Thoughts ({month_str} {year})",
         ]
 

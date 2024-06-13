@@ -102,7 +102,7 @@ msgmerge -U ./messages/books.pot ./messages/reference.pot
 pybabel compile -i ./messages/books.pot -o ./locales/en_US/LC_MESSAGES/books.mo
 ```
 
-Make sure you have one of these environment variables set:
+Make sure you have one of these environment variables set (**not in the .env file**, before you start the bot):
 
 - `LANGUAGE`
 - `LC_ALL`
