@@ -41,9 +41,12 @@ PRESENCE_STATUS="kino, using /help"
 git clone https://github.com/seanbreckenridge/filmswap
 cd filmswap
 pyenv install 3.11.3
+python3 -m pip install virtualenv
 python3 -m virtualenv .venv -p ~/.pyenv/versions/3.11.3/bin/python
-# to develop/work in environment, activate:
+# to develop/work in environment: source activate:
+# (you should do this whenever interacting with the bot/dependencies)
 source ./.venv/bin/activate
+# to leave, type 'deactivate'
 pip install -r ./requirements.txt
 # once all is installed:
 # generate locales if necessary:
