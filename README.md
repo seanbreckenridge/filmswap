@@ -49,7 +49,8 @@ pip install -r ./requirements.txt
 # generate locales if necessary:
 make
 # run the bot
-./.venv/bin/python -m filmswap run
+./scripts/run-bot
+# or ./.venv/bin/python -m filmswap run
 ```
 
 The `requirements.txt` is updated by adding something to `requirements.in` and then using `pip-compile >requirements.txt` (`pip install pip-tools` if command is missing)
