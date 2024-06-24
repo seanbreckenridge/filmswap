@@ -92,7 +92,6 @@ To set the language, set the `APP_LOCALE` in your `.env` file, e.g., `APP_LOCALE
 See the [`Makefile`](./Makefile) for commands that get run, but basically to add a new type, you'd do:
 
 ```bash
-pip install babel
 make clean
 make
 cp ./messages/reference.pot ./messages/books.pot

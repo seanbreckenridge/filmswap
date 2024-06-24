@@ -10,6 +10,7 @@ networkx
 sqlite-backup
 scipy
 pydantic-settings
+babel
 
 # Development requirements
 ipdb
