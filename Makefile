@@ -9,7 +9,7 @@ init:
 	@@ [ -d ./locales/en_US/LC_MESSAGES/ ] || mkdir ./locales/en_US/LC_MESSAGES -p
 
 # if adding a new locale, add the resulting binary path in locales here
-build: ./locales/en_US/LC_MESSAGES/film.mo ./locales/en_US/LC_MESSAGES/manga.mo
+build: ./locales/en_US/LC_MESSAGES/film.mo ./locales/en_US/LC_MESSAGES/manga.mo ./locales/en_US/LC_MESSAGES/visual_novel.mo
 	tree ./messages ./locales
 
 # MANGA
