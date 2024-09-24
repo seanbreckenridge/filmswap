@@ -9,7 +9,7 @@ init:
 	@@ [ -d ./locales/en_US/LC_MESSAGES/ ] || mkdir ./locales/en_US/LC_MESSAGES -p
 
 # if adding a new locale, add the resulting binary path in locales here
-build: ./locales/en_US/LC_MESSAGES/film.mo ./locales/en_US/LC_MESSAGES/manga.mo
+build: ./locales/en_US/LC_MESSAGES/film.mo ./locales/en_US/LC_MESSAGES/manga.mo ./locales/en_US/LC_MESSAGES/visual_novel.mo
 	tree ./messages ./locales
 
 # MANGA
@@ -29,6 +29,15 @@ build: ./locales/en_US/LC_MESSAGES/film.mo ./locales/en_US/LC_MESSAGES/manga.mo
 
 ./locales/en_US/LC_MESSAGES/film.mo: ./messages/film.pot
 	pybabel compile -i ./messages/film.pot -o ./locales/en_US/LC_MESSAGES/film.mo
+	
+# VISUAL NOVEL
+
+./messages/visual_novel.pot: ./messages/reference.pot
+	msgmerge -U --backup=off ./messages/visual_novel.pot ./messages/reference.pot
+	touch ./messages/visual_novel.pot
+
+./locales/en_US/LC_MESSAGES/visual_novel.mo: ./messages/visual_novel.pot
+	pybabel compile -i ./messages/visual_novel.pot -o ./locales/en_US/LC_MESSAGES/visual_novel.mo
 
 # REFERENCE FILE
 
